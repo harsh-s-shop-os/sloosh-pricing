@@ -137,34 +137,11 @@
   ];
   const TILE_ANGLES = [135, 160, 200, 120, 45, 90, 225];
   const tileGrad = k => { const [a, b] = TILE_GRADS[(k * 7) % TILE_GRADS.length]; return `linear-gradient(${TILE_ANGLES[(k * 3) % TILE_ANGLES.length]}deg, hsl(var(${a})), hsl(var(${b})))`; };
-  // A wide, varied pool (nature, city, architecture, food, travel, objects) so no two cards feel alike.
-  // Sourced from Unsplash at 480px/q68 — Creator's tiles render close to 240px CSS, so a 240px source was
-  // showing soft/blurry on retina; 480px keeps them crisp there while staying light per file. Saved locally
-  // under public/pricing/ (via asset(), same as the critter SVGs below) so the strip works offline too.
-  const TILE_PHOTOS = [
-    '1418065460487-3e41a6c84dc5', '1419242902214-272b3f66ee7a', '1421789665209-c9b2a435e3dc',
-    '1439853949127-fa647821eba0', '1441260038675-7329ab4cc264', '1441974231531-c6227db76b6e',
-    '1444464666168-49d633b86797', '1444703686981-a3abbc4d4fe3', '1444723121867-7a241cacace9',
-    '1445307806294-bff7f67ff225', '1447752875215-b2761acb3c5d', '1449824913935-59a10b8d2000',
-    '1454496522488-7a8e488e8606', '1454779132693-e5cd0a216ed3', '1465101162946-4377e57745c3',
-    '1467269204594-9661b134dd2b', '1470071459604-3b5ec3a7fe05', '1470252649378-9c29740c9fa8',
-    '1470770903676-69b98201ea1c', '1470813740244-df37b8c1edcb', '1471623320832-752e8bbf8413',
-    '1475924156734-496f6cac6ec1', '1476514525535-07fb3b4ae5f1', '1476611317561-60117649dd94',
-    '1477346611705-65d1883cee1e', '1478760329108-5c3ed9d495a0', '1483086431886-3590a88317fe',
-    '1483347756197-71ef80e95f73', '1487730116645-74489c95b41b', '1487958449943-2429e8be8625',
-    '1490604001847-b712b0c2f967', '1490750967868-88aa4486c946', '1493246507139-91e8fad9978e',
-    '1494526585095-c41746248156', '1494548162494-384bba4ab999', '1496307653780-42ee777d4833',
-    '1497215728101-856f4ea42174', '1497935586351-b67a49e012bf', '1502082553048-f009c37129b9',
-    '1505142468610-359e7d316be0', '1506905925346-21bda4d32df4', '1506929562872-bb421503ef21',
-    '1508739773434-c26b3d09e071', '1509233725247-49e657c54213', '1509316975850-ff9c5deb0cd9',
-    '1516035069371-29a1b244cc32', '1516117172878-fd2c41f4a759', '1516571748831-5d81767b788d',
-    '1518837695005-2083093ee35b', '1519389950473-47ba0277781c', '1519681393784-d120267933ba',
-    '1520333789090-1afc82db536a', '1524230572899-a752b3835840', '1526170375885-4d8ecf77b99f',
-    '1526772662000-3f88f10405ff', '1531366936337-7c912a4589a7', '1533669955142-6a73332af4db',
-    '1541599468348-e96984315921',
-  ];
+  // 3D renders from lummi.ai/3d (free tier only; Lummi Pro images skipped). Pulled at 480px square, q72 jpg,
+  // saved under public/pricing/ as plan-lummi-NN.jpg. The old Unsplash set is parked in public/pricing-unsplash-old/.
+  const TILE_PHOTOS = Array.from({ length: 17 }, (_, i) => `lummi-${String(i + 1).padStart(2, '0')}`);
   const tileImg = k => {
-    const id = TILE_PHOTOS[k % TILE_PHOTOS.length].split('-')[0];
+    const id = TILE_PHOTOS[k % TILE_PHOTOS.length];
     // gradient first so it's what renders instantly; the local photo layers on top once it loads.
     return `background-image:url('${asset(`pricing/plan-${id}.jpg`)}'),${tileGrad(k)}`;
   };
