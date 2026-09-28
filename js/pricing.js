@@ -143,12 +143,13 @@
     if (!p.rows) return '';
     // Square images sized so the rows exactly fill the strip: 1 row = big, 2 = medium, 4 = small.
     const size = (STRIP - GAP * (p.rows - 1)) / p.rows;
-    const rows = Array.from({ length: p.rows }, (_, r) => {
-      const n = ROW_SIZES[r % ROW_SIZES.length];
-      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="background:${tileGrad(k + r * 5 + planIndex * 11)}"></span>`).join('');
-      const dur = (n * (size + GAP)) / SPEED * (r % 2 ? 1.15 : 1);   // same on-screen speed at any size
+    // r = -1 is a filler row just below the strip; it only shows where the lens lifts the bottom corners.
+    const rows = Array.from({ length: p.rows + 1 }, (_, i) => i - 1).map(r => {
+      const n = ROW_SIZES[(r + 4) % ROW_SIZES.length];
+      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="background:${tileGrad(k + (r + 1) * 5 + planIndex * 11)}"></span>`).join('');
+      const dur = (n * (size + GAP)) / SPEED * (Math.abs(r) % 2 ? 1.15 : 1);   // same on-screen speed at any size
       // three copies of the set so the loop never shows a gap at any card width
-      return `<div class="pv-row"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
+      return `<div class="pv-row${r < 0 ? ' pv-fill' : ''}"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
     }).join('');
     return `<div class="plan-visual" style="--img:${size}px" aria-hidden="true"><div class="pv-lens">${rows}</div></div>`;
   };
@@ -183,11 +184,13 @@
   plansEl.innerHTML = PLANS.map(planHTML).join('');
 
   /* Plan visual: concave-lens curve over the whole strip (not per row). An SVG
-     displacement map, built to the strip's size, magnifies towards the left
-     and right edges around a horizon at the strip's bottom, so the rows bow
-     up into a shallow bowl — more at the top rows, the bottom row near
-     straight — and nothing is pulled in from outside the strip. */
-  const LENS = 0.16;   // extra magnification at the far edges (0 = flat)
+     displacement map built to the strip's size bows every row up by the same
+     amount towards the left and right edges (so the whole grid, bottom row
+     included, reads as one concave curve) and magnifies slightly towards the
+     edges. A filler row below the strip supplies what shows under the lifted
+     bottom corners. */
+  const BOW = 22;      // px the rows rise at the far left/right edges
+  const LENS = 0.1;    // extra horizontal magnification at the edges
   function buildLens() {
     const box = plansEl.querySelector('.pv-lens');
     if (!box) return;
@@ -195,11 +198,11 @@
     if (!w || !h) return;
     const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
     const ctx = cv.getContext('2d'), img = ctx.createImageData(w, h), d = img.data;
-    const cx = w / 2, y0 = h, maxShift = Math.max(cx, h) * (1 - 1 / (1 + LENS)), scale = maxShift * 2 + 2;
-    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-      const nx = (x - cx) / cx, m = 1 + LENS * nx * nx, k = 1 / m - 1;
-      const dx = (x - cx) * k, dy = (y - y0) * k, i = (y * w + x) * 4;
-      d[i] = 128 + dx / scale * 255; d[i + 1] = 128 + dy / scale * 255; d[i + 2] = 128; d[i + 3] = 255;
+    const cx = w / 2, scale = Math.max(BOW, cx * (1 - 1 / (1 + LENS))) * 2 + 2;
+    for (let x = 0; x < w; x++) {
+      const nx = (x - cx) / cx, dx = (x - cx) * (1 / (1 + LENS * nx * nx) - 1), dy = BOW * nx * nx;
+      const R = 128 + dx / scale * 255, G = 128 + dy / scale * 255;
+      for (let y = 0; y < h; y++) { const i = (y * w + x) * 4; d[i] = R; d[i + 1] = G; d[i + 2] = 128; d[i + 3] = 255; }
     }
     ctx.putImageData(img, 0, 0);
     let svg = document.getElementById('pv-lens-svg');
