@@ -144,12 +144,12 @@ ul { padding: 0; list-style: none; }
 .plan-head { position: relative; display: flex; flex-direction: column; gap: 32px; padding: 24px; border-bottom: 1px solid hsl(var(--border)); }
 /* Card top = three groups: intro (name + subtitle), pricing (price + yearly
    line), action (seats + CTA). Tight inside a group, 32px between groups. */
-/* Plan visual: rows of gradient images drifting left to right, bleeding to the
+/* Plan visual (220px strip; was 160): rows of images drifting left to right, bleeding to the
    card's edges at the top. Same strip height on every card (so text stays
    aligned); rows stack from its bottom and fade out towards the top edge. */
 .plan-visual {
   --img-gap: 8px;
-  margin: -24px -24px 0; height: 160px; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0;
+  margin: -24px -24px 0; height: 220px; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
 .pv-lens { height: 100%; margin: 0 -25%; display: flex; flex-direction: column-reverse; gap: var(--img-gap); }  /* wider than the card so tilted rows still reach both edges */
 /* Each row tilts back on its own: top leans away, bottom edge stays put. The real row is --img tall; the negative

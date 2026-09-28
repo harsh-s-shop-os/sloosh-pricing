@@ -163,7 +163,7 @@
     return `background-image:url('${asset(`pricing/plan-${id}.jpg`)}'),${tileGrad(k)}`;
   };
   const ROW_SIZES = [7, 9, 6, 8];   // unique images per row (5–10)
-  const STRIP = 160, GAP = 8, SPEED = 20;
+  const STRIP = 220, GAP = 8, SPEED = 20;
   const TILT = 18, PERSP = 600;
   // Share of the top row hidden behind the card's top edge. Creator's single row must fill the whole strip on
   // its own, so it hides less or its images get enormous.
