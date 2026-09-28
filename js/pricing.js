@@ -8,6 +8,8 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const fmt = n => n.toLocaleString('en-US');
+  // "per seat per month" → two lines, "per seat" / "per month"; "per month" stays one line.
+  const perLines = t => t.split(/ (?=per )/).map(x => `<span class="nw">${x}</span>`).join(' ');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
 
@@ -50,8 +52,8 @@
     const amt = card.querySelector('[data-amt]');
     const from = +amt.querySelector('[data-cur]').textContent.replace(/\D/g, '');
     swapText(amt, '$' + fmt(total), total < from ? -1 : 1);
-    // Two unbreakable chunks, so a narrow card wraps between them, never mid-phrase.
-    card.querySelector('[data-per]').innerHTML = n > 1 ? `<span class="nw">per month</span> <span class="nw">· ${n} seats</span>` : p.per;
+    // Two stacked lines; the last one sits on the price's baseline (.price uses last-baseline alignment).
+    card.querySelector('[data-per]').innerHTML = n > 1 ? `<span class="nw">per month</span> <span class="nw">for ${n} seats</span>` : perLines(p.per);
     card.querySelector('[data-billed]').innerHTML = cycle === 'annual'
       ? `$${fmt(p.annual * 12 * n)} billed yearly · <b>save $${fmt((p.monthly - p.annual) * 12 * n)}</b>`
       : '';
@@ -191,7 +193,7 @@
         <div class="plan-pricing">
           <p class="price">
             <span class="price-amt" data-amt><span data-cur>$${p.monthly}</span></span>
-            <span class="price-per" data-per>${p.per}</span>
+            <span class="price-per" data-per>${perLines(p.per)}</span>
           </p>
           <p class="billed" data-billed aria-live="polite"></p>
         </div>

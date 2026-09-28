@@ -177,10 +177,10 @@ ul { padding: 0; list-style: none; }
 }
 .plan-for { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: balance; }
 /* Amount and label are different sizes, so align on the text baseline, not box centres. */
-.price { display: flex; align-items: baseline; gap: 8px; min-height: 44px; }
+.price { display: flex; align-items: last baseline; gap: 8px; min-height: 44px; }  /* last baseline: a two-line per-label sits its bottom line on the price */
 .price-amt { display: inline-grid; font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .price-per { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); }
-.price-per .nw { white-space: nowrap; }
+.price-per .nw { display: block; white-space: nowrap; }
 .billed { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
 .billed b { font-weight: 500; color: hsl(var(--brand)); }
 /* Only annual billing has this line; on monthly it takes no space, so the card height adjusts. */
