@@ -278,7 +278,7 @@ ul { padding: 0; list-style: none; }
 .block-head { display: grid; gap: 12px; max-width: 640px; margin-bottom: 40px; }
 .eyebrow { font-size: 12px; line-height: 18px; color: hsl(var(--brand)); }
 .block h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
-.lede { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: pretty; }
+.lede { max-width: 512px; color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: pretty; }
 .label { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); }
 
 /* ---------- Calculator ---------- */
