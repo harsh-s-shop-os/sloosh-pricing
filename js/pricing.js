@@ -140,17 +140,17 @@
   // Soft, dreamy Unsplash stills (aurora, milky way, sunset water, misty peaks, wildflowers) — picked to sit
   // quietly behind each plan's copy. Requested small (240px, q=60): these are background thumbnails, not hero art.
   const TILE_PHOTOS = [
-    '1419242902214-272b3f66ee7a', '1444703686981-a3abbc4d4fe3', '1470252649378-9c29740c9fa8',
-    '1475924156734-496f6cac6ec1', '1477346611705-65d1883cee1e', '1531366936337-7c912a4589a7',
-    '1470071459604-3b5ec3a7fe05', '1490750967868-88aa4486c946', '1526772662000-3f88f10405ff',
-    '1502082553048-f009c37129b9', '1505142468610-359e7d316be0', '1454496522488-7a8e488e8606',
-    '1508739773434-c26b3d09e071', '1441974231531-c6227db76b6e',
-    '1441260038675-7329ab4cc264', '1444464666168-49d633b86797', '1445307806294-bff7f67ff225',
-    '1447752875215-b2761acb3c5d', '1470813740244-df37b8c1edcb', '1476514525535-07fb3b4ae5f1',
-    '1476611317561-60117649dd94', '1483086431886-3590a88317fe', '1483347756197-71ef80e95f73',
-    '1487730116645-74489c95b41b', '1518837695005-2083093ee35b', '1541599468348-e96984315921',
-    '1519681393784-d120267933ba', '1418065460487-3e41a6c84dc5', '1439853949127-fa647821eba0',
-    '1470770903676-69b98201ea1c', '1494548162494-384bba4ab999', '1506905925346-21bda4d32df4',
+    '1439853949127-fa647821eba0', '1502082553048-f009c37129b9', '1476514525535-07fb3b4ae5f1',
+    '1505142468610-359e7d316be0', '1470770903676-69b98201ea1c', '1531366936337-7c912a4589a7',
+    '1490750967868-88aa4486c946', '1483347756197-71ef80e95f73', '1419242902214-272b3f66ee7a',
+    '1441260038675-7329ab4cc264', '1526772662000-3f88f10405ff', '1444464666168-49d633b86797',
+    '1487730116645-74489c95b41b', '1518837695005-2083093ee35b', '1483086431886-3590a88317fe',
+    '1441974231531-c6227db76b6e', '1541599468348-e96984315921', '1418065460487-3e41a6c84dc5',
+    '1470071459604-3b5ec3a7fe05', '1445307806294-bff7f67ff225', '1519681393784-d120267933ba',
+    '1470813740244-df37b8c1edcb', '1454496522488-7a8e488e8606', '1475924156734-496f6cac6ec1',
+    '1447752875215-b2761acb3c5d', '1470252649378-9c29740c9fa8', '1444703686981-a3abbc4d4fe3',
+    '1506905925346-21bda4d32df4', '1508739773434-c26b3d09e071', '1477346611705-65d1883cee1e',
+    '1494548162494-384bba4ab999', '1476611317561-60117649dd94',
   ];
   const tileImg = k => {
     const id = TILE_PHOTOS[k % TILE_PHOTOS.length];
@@ -175,7 +175,7 @@
     const size = slot * PERSP / (c * PERSP - slot * sn);
     const rows = Array.from({ length: p.rows }, (_, i) => i).map(r => {
       const n = ROW_SIZES[(r + 4) % ROW_SIZES.length];
-      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="${tileImg(k + r * 5 + planIndex * 11)}"></span>`).join('');
+      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="${tileImg(k + r * 5 + planIndex * 13)}"></span>`).join('');
       const dur = (n * (size + GAP)) / SPEED * (r % 2 ? 1.15 : 1);   // same on-screen speed at any size
       // three copies of the set so the loop never shows a gap at any card width
       return `<div class="pv-row"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
