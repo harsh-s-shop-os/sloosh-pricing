@@ -106,7 +106,7 @@ const COST_ROWS = [
   { what: 'Upscale', cost: COST.upscale, icon: 'upscale' },
   { what: 'Image edit', cost: COST.edit, icon: 'edit' },
   { what: '8-second video', cost: COST.video8, icon: 'video' },
-  { what: 'Longer video (per second)', cost: COST.videoPerSec, icon: 'film', proOnly: true },
+  { what: 'Video, per second', cost: COST.videoPerSec, icon: 'film', proOnly: true, perSecond: true },
 ];
 
 /* Compare table. `null` renders as a dash, `true` as a check. */

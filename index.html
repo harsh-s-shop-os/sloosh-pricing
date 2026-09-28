@@ -76,20 +76,23 @@
       <p class="lede">Every generation spends credits. Bigger outputs spend more. Pick a plan and a mix to see what a month looks like.</p>
     </header>
 
-    <div class="calc">
-      <div class="calc-panel">
-        <div class="calc-top">
-          <p class="label">Your plan</p>
-          <div class="segmented segmented-sm" id="calc-plan" role="group" aria-label="Plan" data-value="pro">
-            <button type="button" data-v="creator" aria-pressed="false">Creator</button>
-            <button type="button" data-v="pro" aria-pressed="true">Pro</button>
-            <button type="button" data-v="max" aria-pressed="false">Max</button>
-          </div>
-        </div>
+    <div class="calc-tabs">
+      <div class="segmented" id="calc-plan" role="group" aria-label="Plan" data-value="pro">
+        <button type="button" data-v="creator" aria-pressed="false">Creator</button>
+        <button type="button" data-v="pro" aria-pressed="true">Pro</button>
+        <button type="button" data-v="max" aria-pressed="false">Max</button>
+      </div>
+    </div>
 
-        <div class="calc-total">
-          <span class="calc-big" id="calc-credits">735</span>
-          <span class="calc-big-l" id="calc-credits-l">credits a month, per seat</span>
+    <div class="calc">
+      <div class="calc-main">
+        <div class="calc-summary">
+          <div class="calc-total">
+            <span class="calc-big" id="calc-credits">735</span>
+            <span class="calc-big-l" id="calc-credits-l">credits a month, per seat</span>
+          </div>
+          <div class="meter" aria-hidden="true"><span class="meter-fill" id="meter-fill"></span></div>
+          <p class="meter-l" id="meter-l" aria-live="polite"></p>
         </div>
 
         <div class="sliders">
@@ -106,9 +109,6 @@
             <input id="m-vid" type="range" min="0" max="60" value="6" data-cost="video8">
           </div>
         </div>
-
-        <div class="meter" aria-hidden="true"><span class="meter-fill" id="meter-fill"></span></div>
-        <p class="meter-l" id="meter-l" aria-live="polite"></p>
       </div>
 
       <div class="costs">

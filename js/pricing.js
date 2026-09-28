@@ -279,15 +279,19 @@
   const range = k => $('#m-' + k);
   const bigEl = $('#calc-credits');
   function paintRange(r) { r.style.setProperty('--p', (r.value - r.min) / (r.max - r.min) * 100 + '%'); }
+  /* Every cost row has the same two-line structure on every plan (name +
+     one sub-line, credits on one line), so switching plans never changes
+     a row's height. A locked row says so in its sub-line. */
   function renderCosts(p) {
     $('#costs').innerHTML = COST_ROWS.map(r => {
       const locked = p.id === 'creator' && r.proOnly;
-      const n = r.unit ? `≈ ${fmt(Math.floor(p.credits / r.cost))} seconds a month on ${p.name}` : `≈ ${fmt(Math.floor(p.credits / r.cost))} a month on ${p.name}`;
+      const n = fmt(Math.floor(p.credits / r.cost));
+      const sub = locked ? 'Pro and Max only' : r.perSecond ? `≈ ${n} seconds a month` : `≈ ${n} a month`;
       return `<li class="cost${locked ? ' locked' : ''}">
         <span class="cost-ic">${I[r.icon]}</span>
-        <span class="cost-what">${r.what}${r.unit ? `<small>${r.unit}</small>` : ''}</span>
-        <span class="cost-cr">${r.cost} credits${locked ? '<small>Pro and Max</small>' : ''}</span>
-        <span class="cost-n">${locked ? 'Not on Creator' : n}</span>
+        <span class="cost-what">${r.what}</span>
+        <span class="cost-cr">${r.cost} credits</span>
+        <span class="cost-n">${sub}</span>
       </li>`;
     }).join('');
   }
