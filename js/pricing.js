@@ -107,20 +107,12 @@
 
   /* ---------- Segmented controls ---------- */
   function segmented(el, onChange) {
-    const btns = $$('button', el), thumb = $('.seg-thumb', el);
-    const place = () => {
-      const b = btns.find(x => x.getAttribute('aria-pressed') === 'true');
-      thumb.style.width = b.offsetWidth + 'px';
-      thumb.style.transform = `translateX(${b.offsetLeft - 4}px)`;
-    };
+    const btns = $$('button', el);
     btns.forEach(b => b.addEventListener('click', () => {
       if (b.getAttribute('aria-pressed') === 'true') return;
       btns.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-      el.dataset.value = b.dataset.v; place(); onChange(b.dataset.v);
+      el.dataset.value = b.dataset.v; onChange(b.dataset.v);
     }));
-    place();
-    addEventListener('resize', place);
-    document.fonts && document.fonts.ready.then(place);
   }
 
   /* ---------- Billing cycle ---------- */
