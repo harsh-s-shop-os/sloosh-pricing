@@ -314,6 +314,7 @@ ul { padding: 0; list-style: none; }
 .calc-big { font-size: 56px; line-height: 64px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .calc-big-l { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); white-space: nowrap; }
 .calc-meter { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+.calc-meter .label { margin-bottom: -4px; }  /* label sits 8px above the bar; bar to text stays 12px */
 .sliders { display: grid; gap: 20px; }
 .slider label { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; line-height: 20px; margin-bottom: 10px; }
 .slider output { font-variant-numeric: tabular-nums; color: hsl(var(--foreground)); }
