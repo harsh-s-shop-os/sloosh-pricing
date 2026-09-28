@@ -6,6 +6,8 @@
   <title>Pricing | Sloosh</title>
   <meta name="description" content="On-brand images and video on every Sloosh plan. Start on your own and bring your team in when the work grows.">
   <link rel="icon" type="image/svg+xml" href="public/favicon/sloosh.svg">
+  <!-- Hide reveal targets before first paint (js/reveal.js shows them); give up after 3s if the script never runs. -->
+  <script>document.documentElement.classList.add('reveal-on');setTimeout(function(){var r=document.documentElement;if(!r.classList.contains('reveal-ready'))r.classList.remove('reveal-on')},3000)</script>
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/pricing.css">
 </head>
@@ -53,7 +55,7 @@
   <!-- ============ Hero ============ -->
   <section class="hero">
     <div class="hero-text">
-      <h1>Your next campaign is waiting.</h1>
+      <h1><span class="h1-line">Your next campaign is waiting.</span> <span class="h1-line">Upgrade your plan.</span></h1>
       <p class="hero-sub">On-brand images and video on every plan. Start on your own and bring your team in when the work grows.</p>
     </div>
     <div class="segmented" id="cycle" role="group" aria-label="Billing cycle" data-value="annual">
@@ -71,7 +73,7 @@
   <!-- ============ Credits ============ -->
   <section class="block band band-brand" id="credits">
     <header class="block-head">
-      <h2>Spend your credits on whatever the campaign needs.</h2>
+      <h2>Spend your credits on what your campaign needs.</h2>
       <p class="lede">Images, video, upscales and edits all draw from the same credits. Pick a plan and a mix to see what a month looks like.</p>
     </header>
 
@@ -138,7 +140,7 @@
 
   <section class="block band" id="faq">
     <header class="block-head">
-      <h2>Still deciding?</h2>
+      <h2>Get your questions answered.</h2>
       <p class="lede">Here's what people ask before they pick a plan.</p>
     </header>
     <div class="faq">
@@ -147,17 +149,26 @@
     </div>
   </section>
 
-  <!-- ============ Closing ============ -->
-  <section class="closing">
-    <div class="closing-critters" aria-hidden="true" id="closing-critters"></div>
-    <h2>Start making today.</h2>
-    <p>Start on Creator. Move up when your team does.</p>
-    <a class="btn btn-lg btn-brand" href="/sign-up?redirect=%2Fpricing&plan=creator">Start creating <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="arrow" width="16" height="16"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
-  </section>
-
 </main>
 
+  <!-- ============ Footer: masonry grid of images with the CTA card in the centre column (js/masonry.js) ============ -->
+  <footer class="site-footer" id="footer">
+    <div class="footer-masonry" id="masonry"></div>
+    <div class="closing">
+      <div class="peek" id="peek" aria-hidden="true"></div>
+      <h2>Turn your taste into finished work.</h2>
+      <p>Images and video on brand, from the first draft.</p>
+      <a class="btn btn-lg btn-brand" href="/sign-up?redirect=%2Fpricing&plan=creator">Start creating <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="arrow" width="16" height="16"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    </div>
+  </footer>
+
 <script src="js/config.js"></script>
+<script src="js/vendor/gsap.min.js"></script>
+<script src="js/masonry.js"></script>
+<script src="js/image-trail.js"></script>
+<script src="js/peek.js"></script>
+<script src="js/pixel-load.js"></script>
+<script src="js/reveal.js"></script>
 <script src="js/pricing.js"></script>
 </body>
 </html>

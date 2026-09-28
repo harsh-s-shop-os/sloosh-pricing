@@ -21,7 +21,9 @@ No framework, no dependencies.
 | `js/config.js` | **All prices, credits, features, compare rows and FAQ copy.** Edit this first. |
 | `css/tokens.css` | Sloosh design tokens, copied 1:1 from dev.sloosh.ai (neutral scale, `.dark` theme, yellow, motion). |
 | `css/pricing.css` | Page styles. Uses only tokens. |
-| `js/pricing.js` | Renders the page from config: billing toggle, calculator, table, FAQ, critters, logo eyes. |
+| `js/pricing.js` | Renders the page from config: billing toggle, calculator, table, FAQ, critters, logo eyes, footer trail. |
+| `js/peek.js` | Footer animals: one at a time peeks into the card from a random edge, eyes follow the cursor. |
+| `js/image-trail.js` | Cursor image trail in the footer. Vanilla port of the 21st.dev `ImageTrail` React component (same options and defaults). |
 | `public/` | Critter SVGs and favicon from dev.sloosh.ai. |
 | `tools/build-single.mjs` | Inlines everything into `dist/pricing.html`. |
 
@@ -60,4 +62,5 @@ Gallery and plan-card images are Lummi 3D placeholders. Swap them for real Space
 - Tokens are HSL channel triplets: use `hsl(var(--token))` or `hsl(var(--token) / .5)`.
 - Headings are weight 400, system font stack — matches the app. Do not add a display font.
 - Critter positions in `js/pricing.js` are copied from the live DOM (`[data-testid^=plan-critters]`).
+- Footer: full-width `<footer>` holds the image trail; the CTA is a centred glass card (`.closing`, 55% card colour + 24px backdrop blur, 96px padding on all sides). Animals come from `js/peek.js`, not the old `#closing-critters` row. Their SVGs are fetched and inlined so pupils can move; opened from disk (file://) the fetch fails and they fall back to still images.
 - `window.PRICING_ASSETS` is only set by the single-file build; otherwise assets load from `public/`.

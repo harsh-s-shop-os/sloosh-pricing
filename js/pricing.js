@@ -133,21 +133,18 @@
   // every card's CTA lines up across the row.
   const seatRowHTML = p => !p.seats ? '<div class="seat-spacer" aria-hidden="true"></div>' : `
         <div class="seat-row" data-seats data-min="${p.seats.min}" data-max="${p.seats.max}">
-          <div>
-            <p class="label">Select Seats</p>
-            <p class="seat-note" data-seat-note></p>
-          </div>
-          <div class="stepper">
+          <div class="stepper" role="group" aria-label="Seats">
             <button type="button" class="stepper-btn" data-step="-1" aria-label="Decrease seats">${I.minus}</button>
-            <span class="stepper-val" data-seat-count aria-live="polite"><span data-cur>${p.seats.default}</span></span>
+            <span class="stepper-read"><span class="stepper-val" data-seat-count aria-live="polite"><span data-cur>${p.seats.default}</span></span> <span class="stepper-unit" data-seat-unit>seat</span></span>
             <button type="button" class="stepper-btn" data-step="1" aria-label="Increase seats">${I.plus}</button>
           </div>
+          <p class="seat-note" data-seat-note></p>
         </div>`;
   /* ---------- Plan visual ----------
      Rows of images drifting left to right at the top of each card:
-     2 rows on Creator, 4 on Pro, 6 on Max (PLANS[].rows). Rows stack up from the bottom of a
+     1 row on Creator, 2 on Pro, 4 on Max (PLANS[].rows). Rows stack up from the bottom of a
      fixed-height strip and fade out towards the card's top edge, so extra rows
-     peek in from the top. Hovering a card speeds its rows up. */
+     peek in from the top. Black and white; the whole card turns to colour on hover. */
   const TILE_GRADS = [
     ['--yellow-500', '--amber-400'], ['--yellow-100', '--yellow-500'], ['--yellow-400', '--yellow-700'],
     ['--amber-400', '--yellow-700'], ['--yellow-500', '--yellow-100'],
@@ -169,11 +166,11 @@
   // Each row holds enough different images to span the widest card (560px when cards stack) plus the tilt's
   // overhang, so the loop never shows the same image twice in view.
   const MAX_CARD = 560;
-  const STRIP = 220, GAP = 8, SPEED = 20;
-  const TILT = 18, PERSP = 600;
+  const STRIP = 160, GAP = 8, SPEED = 20;   // strip height (px), between the price and the credits (was 192)
+  const TILT = 0, PERSP = 600;   // rows are slanted flat (css skewX), not tilted back, so no height correction
   // Share of the top row hidden behind the card's top edge. Creator's single row must fill the whole strip on
   // its own, so it hides less or its images get enormous.
-  const PEEK = rows => (rows === 1 ? 0.2 : 0.35);   // per-row tilt (deg) and perspective depth (px) — mirrored in .pv-row   // strip height (px), gap (px), drift speed (px/s)
+  const PEEK = () => 0;   // no row is cut off any more: the rows are sized to fit the strip exactly (was 0.2 / 0.35 peeking in at the card's top edge)   // per-row tilt (deg) and perspective depth (px) — mirrored in .pv-row   // strip height (px), gap (px), drift speed (px/s)
   const visualHTML = (p, planIndex) => {
     if (!p.rows) return '';
     // Square images sized so the rows exactly fill the strip: 2 rows = big, 4 = medium, 6 = small.
@@ -186,17 +183,19 @@
     const size = slot * PERSP / (c * PERSP - slot * sn);
     const rows = Array.from({ length: p.rows }, (_, i) => i).map(r => {
       const n = Math.ceil(MAX_CARD * 1.1 / (size + GAP)) + 1;
-      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="${tileImg(draw(), k + r * 5 + planIndex * 13)}"></span>`).join('');
+      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img"><span class="pv-pic" style="${tileImg(draw(), k + r * 5 + planIndex * 13)}"></span></span>`).join('');
       const dur = (n * (size + GAP)) / SPEED * (r % 2 ? 1.15 : 1);   // same on-screen speed at any size
       // three copies of the set so the loop never shows a gap at any card width
       return `<div class="pv-row"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
     }).join('');
     return `<div class="plan-visual" style="--img:${size.toFixed(2)}px;--slot:${slot.toFixed(2)}px" aria-hidden="true"><div class="pv-lens">${rows}</div></div>`;
   };
+  // Card order (final wireframe): title + subtitle, price, image rows + credits (8px apart, one group), seats + subscribe,
+  // divider, features. Groups are 32px apart (.plan-head gap).
   const planHTML = (p, i) => `
     <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}" style="--i:${i}">
       <div class="critters" aria-hidden="true">${STRIPES}</div>
-      <div class="plan-head">${visualHTML(p, i)}
+      <div class="plan-head">
         <div class="plan-intro">
           <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Popular</span>' : ''}</div>
           <p class="plan-for">${p.for}</p>
@@ -209,14 +208,16 @@
           </p>
           <p class="billed" data-billed aria-live="polite"></p>
         </div>
+        <div class="plan-media">${visualHTML(p, i)}
+          <p class="credits-line"><span><strong data-credits="${p.credits}">${fmt(p.credits)}</strong> ${p.creditsLabel}</span>
+            <button type="button" class="info" aria-label="What ${fmt(p.credits)} credits makes" aria-expanded="false">${I.info}<span class="tip" role="tooltip">${tipHTML(p)}</span></button>
+          </p>
+        </div>
         <div class="plan-action">${seatRowHTML(p)}
           <a class="btn btn-md ${p.featured ? 'btn-brand' : 'btn-secondary'} plan-cta" href="${p.href}">${p.cta} ${I.arrow}</a>
         </div>
       </div>
       <div class="plan-body">
-        <p class="credits-line"><span><strong data-credits="${p.credits}">${fmt(p.credits)}</strong> ${p.creditsLabel}</span>
-          <button type="button" class="info" aria-label="What ${fmt(p.credits)} credits makes" aria-expanded="false">${I.info}<span class="tip" role="tooltip">${tipHTML(p)}</span></button>
-        </p>
         ${p.eyebrow ? `<p class="eyebrow-sm">${p.eyebrow}</p>` : ''}
         <ul class="feats">${p.feats.map(f => `<li>${I.check}<span>${f}</span></li>`).join('')}</ul>
       </div>
@@ -224,30 +225,72 @@
   const plansEl = $('#plans');
   plansEl.innerHTML = PLANS.map(planHTML).join('');
 
-  // Plan visual: hovering (or keyboard focus inside) a card slows its rows down;
-  // playbackRate keeps each row's position, so the change is seamless.
-  plansEl.querySelectorAll('.plan').forEach(card => {
-    const rows = () => [...card.querySelectorAll('.pv-track')].flatMap(t => t.getAnimations());
-    const speed = r => rows().forEach(a => a.updatePlaybackRate ? a.updatePlaybackRate(r) : (a.playbackRate = r));
-    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      card.addEventListener('mouseenter', () => speed(0.25));
-      card.addEventListener('mouseleave', () => speed(1));
-    }
-    card.addEventListener('focusin', e => { if (e.target.matches(':focus-visible')) speed(0.25); });
-    card.addEventListener('focusout', () => { if (!card.matches(':hover')) speed(1); });
-  });
+  // Plan visual: rows keep one speed whatever you do; hovering (or keyboard focus inside) a card turns all its
+  // images from black and white to colour at once (css).
+
+  // Plan images follow the cursor anywhere on the page, not just over a card: while a card's images are on screen,
+  // every row slants towards the pointer, measured from that card. Pointer over the card's right half (or anywhere to
+  // its right) leans right, left half / anywhere to its left leans left, straight up at the card's centre line; full
+  // --slant (6 / 7 / 8deg) from the card's edge outwards. So with the pointer between two cards, they lean towards it
+  // from both sides. When the pointer leaves the window the rows ease back to their resting slant (each leaning the
+  // way it drifts). Eased per frame, like the kinetic gallery's spring. Mouse only; off under reduced motion.
+  if (!reduce && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const slanters = [...plansEl.querySelectorAll('.plan')].map(card => {
+      const rows = [...card.querySelectorAll('.pv-row')];
+      if (!rows.length) return null;
+      const strip = card.querySelector('.plan-visual');
+      const max = () => parseFloat(getComputedStyle(card).getPropertyValue('--slant')) || 7;
+      const rest = () => rows.map((_, i) => (i % 2 ? 1 : -1) * max());   // skewX: negative leans right
+      const o = { card, rows, strip, max, rest, cur: rest(), target: null, visible: false };
+      o.target = o.cur.slice();
+      return o;
+    }).filter(Boolean);
+    let raf = 0, pointer = null;
+    const aim = () => slanters.forEach(o => {
+      if (!pointer) { o.target = o.rest(); return; }
+      const b = o.card.getBoundingClientRect();
+      const x = Math.min(1, Math.max(-1, (pointer - (b.left + b.width / 2)) / (b.width / 2)));   // -1 … 1
+      o.target = o.rows.map(() => -x * o.max());
+    });
+    const tick = () => {
+      let moving = false;
+      slanters.forEach(o => {
+        if (!o.visible) return;   // off-screen cards skip the work (they catch up when they come back)
+        o.cur = o.cur.map((v, i) => {
+          const n = v + (o.target[i] - v) * 0.12;
+          if (Math.abs(o.target[i] - n) <= 0.01) return o.target[i];
+          moving = true;
+          return n;
+        });
+        o.rows.forEach((r, i) => { r.style.transform = `skewX(${o.cur[i].toFixed(2)}deg)`; });
+      });
+      raf = moving ? requestAnimationFrame(tick) : 0;
+    };
+    const go = () => { aim(); if (!raf) raf = requestAnimationFrame(tick); };
+    addEventListener('pointermove', e => { if (e.pointerType === 'mouse') { pointer = e.clientX; go(); } }, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => { pointer = null; go(); });   // pointer left the window
+    addEventListener('blur', () => { pointer = null; go(); });
+    const io = new IntersectionObserver(es => {
+      es.forEach(en => { const o = slanters.find(s => s.strip === en.target); if (o) o.visible = en.isIntersecting; });
+      go();
+    });
+    slanters.forEach(o => io.observe(o.strip || o.card));
+  }
 
   // Seat steppers: one per paid plan, clamped to that plan's own range
   $$('.seat-row[data-seats]', plansEl).forEach(row => {
     const min = +row.dataset.min, max = +row.dataset.max;
     const plan = PLANS.find(x => x.id === row.closest('[data-plan]').dataset.plan);
-    const valEl = $('[data-seat-count]', row), noteEl = $('[data-seat-note]', row);
+    const valEl = $('[data-seat-count]', row), noteEl = $('[data-seat-note]', row), unitEl = $('[data-seat-unit]', row);
     const minusBtn = $('.stepper-btn[data-step="-1"]', row), plusBtn = $('.stepper-btn[data-step="1"]', row);
     let n = +$('[data-cur]', valEl).textContent;
     const paint = (dir = 1) => {
       swapText(valEl, n, dir, 160);
       seatsBy[plan.id] = n; renderPrice(plan);
-      noteEl.textContent = n <= 1 ? 'Just you.' : `You + ${n - 1} teammate${n - 1 > 1 ? 's' : ''}`;
+      unitEl.textContent = n === 1 ? 'seat' : 'seats';
+      // Two lines, like the stepper's height: "You and" / "2 teammates"; one seat is just "Just you".
+      noteEl.innerHTML = n <= 1 ? '<span>Just you</span>'
+        : `<span>You and</span><span>${n - 1} teammate${n - 1 > 1 ? 's' : ''}</span>`;
       minusBtn.disabled = n <= min; plusBtn.disabled = n >= max;
     };
     minusBtn.addEventListener('click', () => { if (n > min) { n--; paint(-1); } });
@@ -270,6 +313,7 @@
      three cards above (name + price under Creator, list under Pro, CTA under
      Max), using the same type and parts as a plan card. */
   $('#enterprise').innerHTML = `
+    <div class="critters" aria-hidden="true">${STRIPES}</div>
     <div class="ent-col ent-info">
       <div class="plan-intro">
         <div class="plan-title"><h2>${ENTERPRISE.eyebrow}</h2></div>
@@ -431,8 +475,38 @@
   }, { rootMargin: '-40% 0px -55% 0px' });
   $$('.faq-group').forEach(g => spy.observe(g));
 
-  /* ---------- Closing critters ---------- */
-  $('#closing-critters').innerHTML = C.mouse(0, 3) + C.cat(76, -2) + C.parrot(158, -2) + C.chicken(216, 2) + C.dog(273, -1);
+  /* ---------- Footer animals ---------- */
+  /* Up to three animals at a time peek into the footer card, each from its own corner (js/peek.js). */
+  if (window.Peek && $('.closing')) window.Peek($('.closing'), { src: f => asset(`pricing/${f}`), max: 3, edges: ['top', 'bottom'], scale: 1.1 });   // animals at 1.1× (were 1.44×)   // up to 3 at once, one per corner, top and bottom edges only (never the sides)
+
+  /* ---------- Footer masonry ----------
+     Replaces the image trail and dot grid. Up to 24 images from the Lummi pool, reshuffled, in a masonry grid (React Bits
+     <Masonry /> port, js/masonry.js) that flies in when the footer scrolls into view. The CTA card (.closing, with
+     the peeking animals) spans the three centre columns, after two rows of images. Heights vary so the columns stagger. */
+  const mzEl = $('#masonry'), cardEl = $('.closing');
+  // Same hover shine as the plan cards, behind the card's text.
+  if (cardEl) cardEl.insertAdjacentHTML('afterbegin', `<div class="critters" aria-hidden="true">${STRIPES}</div>`);
+  if (mzEl && window.Masonry) {
+    const pool = TILE_PHOTOS.slice();
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const R = [1, 1.25, 1.5];   // square, 4:5 or 2:3 portrait, as a share of the column width (the photos are square, cropped to fit)
+    window.Masonry(mzEl, {
+      items: pool.slice(0, 48).map((id, i) => ({ id: `mz-${i}`, img: asset(`pricing/plan-${id}.jpg`), ratio: R[Math.floor(Math.random() * R.length)] })),
+      card: { el: cardEl, height: 380, span: 2, afterRows: 2, leadRatio: 1, spanHeight: 280 },   // spans the 2 centre columns, after 2 rows of square images
+      columns: [['(min-width:1000px)', 6], ['(min-width:600px)', 4], ['(min-width:0px)', 2]],   // 6 columns; 4 on tablets, 2 on phones (card stays centred)
+      limit: { 6: 44, 4: 28, 2: 14 },   // ~6 more per column than before, so the shorter columns run past the fade
+      clipToShortest: true,             // grid ends at the shortest column; the bottom fade (css) runs over filled columns
+      ease: 'power3.out', duration: 0.6, stagger: 0.04, animateFrom: 'bottom',
+      rise: 32, blur: 4, enterDuration: 0.7, enterEase: 'power3.out',   // entrance: 32px rise into place, 4px blur, 700ms (was: from below the viewport, 10px, 800ms)
+      scaleOnHover: false, blurToFocus: true, colorShiftOnHover: false,   // no hover effect
+      // Same pixel load as the plan-card images (js/pixel-load.js), white dots, on each image's own entrance stagger.
+      onEnter: (el, delay, visible) => {
+        const show = () => el.classList.remove('px-wait');
+        if (!visible || !window.PixelLoad) return show();
+        window.PixelLoad(el.querySelector('.mz-img'), { variant: 'default', delay: delay + 60 + Math.random() * 120, speedUp: 1.6, hold: 120, onCovered: show });
+      },
+    });
+  }
 
   /* ---------- Eyes that follow the cursor (logo + dog) ---------- */
   const pupils = $$('.logo .pupil');
@@ -457,9 +531,43 @@
     const GAL = TILE_PHOTOS.slice(0, 17);   // the gallery keeps its original 17 images
     const half = Math.ceil(GAL.length / 2);
     const sets = [GAL.slice(0, half), GAL.slice(half)];
-    galEl.innerHTML = sets.map((ids, r) => {
+    const rowHTML = (ids, r) => {
       const set = ids.map(id => `<span class="gal-img" style="background-image:url('${asset(`pricing/plan-${id}.jpg`)}')"></span>`).join('');
-      return `<div class="gal-row"><div class="gal-track" style="animation-duration:${(ids.length * 9 + r * 8)}s">${set}${set}${set}</div></div>`;
-    }).join('');
+      return `<div class="gal-row gal-row-${r + 1}"><div class="gal-track" style="animation-duration:${(ids.length * 9 + r * 8)}s">${set}${set}${set}</div></div>`;
+    };
+    // One row, above the FAQ (the second row below the FAQ was removed).
+    galEl.innerHTML = rowHTML(sets[0], 0);
   }
+  /* ---------- Reveal on scroll (js/reveal.js) ----------
+     The footer masonry's entrance, toned down by size, everywhere except the plan cards (pixel load, below). */
+  if (window.Reveal) window.Reveal([
+    // Plan cards fade in (no rise, no blur), 80ms apart. Every image tile inside loads under its own PixelCard shimmer
+    // (js/pixel-load.js): yellow dots on Pro, white on the others; bottom row first, tiles a little apart.
+    { sel: '.plan', step: 80, onShow: (card, d) => {
+      const strip = card.querySelector('.plan-visual');
+      if (!strip) return;
+      const variant = card.classList.contains('featured') ? 'yellow' : 'default';
+      const sr = strip.getBoundingClientRect();
+      card.querySelectorAll('.pv-row').forEach((row, r) => {
+        // Staggered row entrance (restored): bottom row first, 130ms apart; each row rises in with a light blur.
+        const rowDelay = d + 160 + r * 130;
+        row.style.setProperty('--rd', `${rowDelay}ms`);
+        row.classList.add('is-in');
+        row.querySelectorAll('.pv-img').forEach(tile => {
+          const show = () => tile.classList.add('px-in');
+          const t = tile.getBoundingClientRect();
+          const inView = t.right > sr.left && t.left < sr.right && t.bottom > sr.top && t.top < sr.bottom;
+          if (!inView || !window.PixelLoad) return show();   // off-strip copies of the loop just appear
+          window.PixelLoad(tile, { variant, delay: rowDelay + Math.random() * 120, speedUp: 1.6, hold: 120, onCovered: show });
+        });
+      });
+    } },
+    { sel: '.enterprise' },
+    { sel: '.calc', children: { sel: '.calc-panel, .costs', base: 120, step: 80 } },   // the card rises first, then its halves
+    { sel: '.table-wrap' },
+    { sel: '.gal-row', step: 90 },
+    { sel: '.faq-nav, #faq-list details', step: 90, max: 1000 },   // slower: 90ms apart (was 40), up to 1s
+  ]);
+  else document.documentElement.classList.remove('reveal-on');
+
 })();
