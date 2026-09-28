@@ -72,7 +72,6 @@
         </p>
         <p class="billed" data-billed aria-live="polite"></p>
         <a class="btn btn-md ${p.featured ? 'btn-brand' : 'btn-secondary'} plan-cta" href="${p.href}">${p.cta}</a>
-        <p class="plan-note">${p.note}</p>
       </div>
       <div class="plan-body">
         <p class="credits-line"><span><strong data-credits="${p.credits}">${fmt(p.credits)}</strong> ${p.creditsLabel}</span>
