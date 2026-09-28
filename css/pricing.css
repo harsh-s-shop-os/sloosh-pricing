@@ -184,7 +184,7 @@ ul { padding: 0; list-style: none; }
   color: hsl(var(--neutral-500)); text-decoration: line-through; text-decoration-thickness: 2px; }  /* one step fainter than muted-foreground (neutral-400); 3.9:1 on card, fine at 36px */
 .price-per { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); }
 .price-per .nw { display: block; white-space: nowrap; }
-.billed { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+.billed { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
 .billed b { font-weight: 500; color: hsl(var(--brand)); }
 /* Only annual billing has this line; on monthly it takes no space, so the card height adjusts. */
 .billed:empty { display: none; }
