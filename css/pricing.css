@@ -149,12 +149,11 @@ ul { padding: 0; list-style: none; }
    aligned); rows stack from its bottom and fade out towards the top edge. */
 .plan-visual {
   --img-gap: 8px;
-  margin: -24px -24px 0; height: 160px; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0;
-  /* eased (cosine) fade in at the top and out at the bottom — many stops so there's no visible banding */
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.000) 0.0%, rgba(0,0,0,0.024) 4.0%, rgba(0,0,0,0.095) 8.0%, rgba(0,0,0,0.206) 12.0%, rgba(0,0,0,0.345) 16.0%, rgba(0,0,0,0.500) 20.0%, rgba(0,0,0,0.655) 24.0%, rgba(0,0,0,0.794) 28.0%, rgba(0,0,0,0.905) 32.0%, rgba(0,0,0,0.976) 36.0%, rgba(0,0,0,1.000) 40.0%, rgba(0,0,0,1.000) 55.0%, rgba(0,0,0,0.976) 59.5%, rgba(0,0,0,0.905) 64.0%, rgba(0,0,0,0.794) 68.5%, rgba(0,0,0,0.655) 73.0%, rgba(0,0,0,0.500) 77.5%, rgba(0,0,0,0.345) 82.0%, rgba(0,0,0,0.206) 86.5%, rgba(0,0,0,0.095) 91.0%, rgba(0,0,0,0.024) 95.5%, rgba(0,0,0,0.000) 100.0%); mask-image: linear-gradient(to bottom, rgba(0,0,0,0.000) 0.0%, rgba(0,0,0,0.024) 4.0%, rgba(0,0,0,0.095) 8.0%, rgba(0,0,0,0.206) 12.0%, rgba(0,0,0,0.345) 16.0%, rgba(0,0,0,0.500) 20.0%, rgba(0,0,0,0.655) 24.0%, rgba(0,0,0,0.794) 28.0%, rgba(0,0,0,0.905) 32.0%, rgba(0,0,0,0.976) 36.0%, rgba(0,0,0,1.000) 40.0%, rgba(0,0,0,1.000) 55.0%, rgba(0,0,0,0.976) 59.5%, rgba(0,0,0,0.905) 64.0%, rgba(0,0,0,0.794) 68.5%, rgba(0,0,0,0.655) 73.0%, rgba(0,0,0,0.500) 77.5%, rgba(0,0,0,0.345) 82.0%, rgba(0,0,0,0.206) 86.5%, rgba(0,0,0,0.095) 91.0%, rgba(0,0,0,0.024) 95.5%, rgba(0,0,0,0.000) 100.0%);
+  margin: -24px -24px 0; height: 160px; overflow: hidden; perspective: 900px; perspective-origin: 50% 100%; border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
-/* The lens box runs one row below the visible strip (the filler row), so lifted corners show more images, not empty space. */
-.pv-lens { height: 100%; display: flex; flex-direction: column-reverse; gap: var(--img-gap); }
+.pv-lens { height: 100%; margin: 0 -25%; display: flex; flex-direction: column-reverse; gap: var(--img-gap);
+  /* the whole set tilts as one plane: top leans away, bottom edge stays put, so every card's last row ends at the same line */
+  transform: rotateX(18deg); transform-origin: 50% 100%; }
 .pv-row { flex: none; }
 .pv-track { display: flex; width: max-content; animation: pv-drift 30s linear infinite; }
 /* alternate rows run the other way (rows are listed bottom-up) */

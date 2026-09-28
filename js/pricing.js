@@ -143,11 +143,11 @@
     if (!p.rows) return '';
     // Square images sized so the rows exactly fill the strip: 1 row = big, 2 = medium, 4 = small.
     const size = (STRIP - GAP * (p.rows - 1)) / p.rows;
-    // r = -1 is a filler row just below the strip; it only shows where the lens lifts the bottom corners.
-    const rows = Array.from({ length: p.rows }, (_, i) => i).map(r => {
+    // Two extra rows sit above the strip: the tilt foreshortens the set, and these fill the space it frees at the top.
+    const rows = Array.from({ length: p.rows + 2 }, (_, i) => i).map(r => {
       const n = ROW_SIZES[(r + 4) % ROW_SIZES.length];
-      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="background:${tileGrad(k + (r + 1) * 5 + planIndex * 11)}"></span>`).join('');
-      const dur = (n * (size + GAP)) / SPEED * (Math.abs(r) % 2 ? 1.15 : 1);   // same on-screen speed at any size
+      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="background:${tileGrad(k + r * 5 + planIndex * 11)}"></span>`).join('');
+      const dur = (n * (size + GAP)) / SPEED * (r % 2 ? 1.15 : 1);   // same on-screen speed at any size
       // three copies of the set so the loop never shows a gap at any card width
       return `<div class="pv-row"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
     }).join('');
