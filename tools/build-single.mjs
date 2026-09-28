@@ -27,4 +27,5 @@ html = html.replace('<script>', assetScript + '\n<script>');
 
 mkdirSync(join(root, 'dist'), { recursive: true });
 writeFileSync(join(root, 'dist/pricing.html'), html);
-console.log('dist/pricing.html', (html.length / 1024).toFixed(1) + ' KB');
+writeFileSync(join(root, 'dist/index.html'), html);   // what Vercel serves at / (vercel.json → outputDirectory: dist)
+console.log('dist/pricing.html + dist/index.html', (html.length / 1024).toFixed(1) + ' KB');
