@@ -418,4 +418,17 @@
       p.style.transform = `translate(${Math.cos(a) * m}px, ${Math.sin(a) * m}px)`;
     });
   }, { passive: true });
+  /* ---------- Gallery ----------
+     Full-bleed visual break between the compare table and the FAQ: two rows of
+     the plan-card images at a much bigger size, drifting in opposite directions.
+     Same pool as the cards (TILE_PHOTOS); swap for real Spacelab work before shipping. */
+  const galEl = $('#gal');
+  if (galEl) {
+    const half = Math.ceil(TILE_PHOTOS.length / 2);
+    const sets = [TILE_PHOTOS.slice(0, half), TILE_PHOTOS.slice(half)];
+    galEl.innerHTML = sets.map((ids, r) => {
+      const set = ids.map(id => `<span class="gal-img" style="background-image:url('${asset(`pricing/plan-${id}.jpg`)}')"></span>`).join('');
+      return `<div class="gal-row"><div class="gal-track" style="animation-duration:${(ids.length * 9 + r * 8)}s">${set}${set}${set}</div></div>`;
+    }).join('');
+  }
 })();

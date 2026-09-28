@@ -30,6 +30,21 @@ No framework, no dependencies.
 - Annual prices: 15 / 39 / 79 (in `js/config.js` → `PLANS[].annual`)
 - Credit cost per generation: every value in `COST`
 
+## Section rhythm
+
+Each section changes at least two of surface, layout, type scale and imagery, so no two neighbours look alike:
+
+| Section | Treatment |
+| --- | --- |
+| Plans + Enterprise | Dark cards, moving images |
+| Credits | Full-bleed yellow band, dark calculator card sitting on it |
+| Compare | No container, centred 48px heading, table straight on the page |
+| Gallery | Full-bleed rows of big images, no text blocks |
+| FAQ | Light band, sticky heading on the left, questions on hairlines |
+| Closing | No card, poster-size type |
+
+Gallery and plan-card images are Lummi 3D placeholders. Swap them for real Spacelab work before shipping.
+
 ## Fixed vs the live page
 
 - Cards were a fixed 640px tall with dead space; now content-height with a reserved critter zone.
@@ -41,6 +56,8 @@ No framework, no dependencies.
 - Added: credit calculator, cost list, compare table, FAQ, closing CTA.
 
 ## Agents only
+
+- Light and yellow sections re-map tokens inside the section (`.band-light`, `.band-brand` in `css/pricing.css`). Components need no variants; add new sections the same way.
 
 - Tokens are HSL channel triplets: use `hsl(var(--token))` or `hsl(var(--token) / .5)`.
 - Headings are weight 400, system font stack — matches the app. Do not add a display font.
