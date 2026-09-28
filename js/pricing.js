@@ -81,7 +81,6 @@
         <p class="plan-for">${p.for}</p>
         <p class="price">
           <span class="price-amt" data-amt>$${p.monthly}</span>
-          <span class="price-was" data-was hidden>$${p.monthly}</span>
           <span class="price-per" data-per>${p.per}</span>
         </p>
         <p class="billed" data-billed aria-live="polite"></p>${seatRowHTML(p)}
@@ -159,12 +158,11 @@
   function renderCycle() {
     PLANS.forEach(p => {
       const card = $(`[data-plan="${p.id}"]`, plansEl);
-      const amt = $('[data-amt]', card), was = $('[data-was]', card), billed = $('[data-billed]', card);
+      const amt = $('[data-amt]', card), billed = $('[data-billed]', card);
       const from = +amt.textContent.replace(/\D/g, ''), to = p[cycle];
       tween(amt, from, to, '$');
-      was.hidden = cycle !== 'annual';
       billed.innerHTML = cycle === 'annual'
-        ? `$${fmt(p.annual * 12)}${p.seats && p.seats.max > 1 ? ' per seat' : ''} billed yearly · <b>save $${fmt((p.monthly - p.annual) * 12)}</b>`
+        ? `$${fmt(p.annual * 12)} billed yearly · <b>save $${fmt((p.monthly - p.annual) * 12)}</b>`
         : '';
       const th = $(`[data-price="${p.id}"]`);
       if (th) th.textContent = `$${p[cycle]} / ${p.perShort}${cycle === 'annual' ? ', billed yearly' : ''}`;
