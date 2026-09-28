@@ -127,31 +127,31 @@
           </div>
         </div>`;
   /* ---------- Plan visual ----------
-     A grid of generated "images" (gradient tiles): 1 on Creator, 50 on Pro,
-     200 on Max — more plan, more output. At rest it shows a dim preview; on
-     hover (or keyboard focus, or first view on touch) the tiles clear and fill
-     in one by one, bottom to top, while the status counts them up. */
+     Rows of gradient "images" drifting left to right at the top of each card:
+     1 row on Creator, 2 on Pro, 4 on Max. Rows stack up from the bottom of a
+     fixed-height strip and fade out towards the card's top edge, so extra rows
+     peek in from the top. Hovering a card speeds its rows up. */
   const TILE_GRADS = [
     ['--yellow-500', '--amber-400'], ['--yellow-100', '--yellow-500'], ['--yellow-400', '--yellow-700'],
     ['--amber-400', '--yellow-700'], ['--yellow-500', '--yellow-100'],
   ];
   const TILE_ANGLES = [135, 160, 200, 120, 45, 90, 225];
   const tileGrad = k => { const [a, b] = TILE_GRADS[(k * 7) % TILE_GRADS.length]; return `linear-gradient(${TILE_ANGLES[(k * 3) % TILE_ANGLES.length]}deg, hsl(var(${a})), hsl(var(${b})))`; };
-  const visualHTML = p => {
-    const v = p.visual; if (!v) return '';
-    const rows = v.tiles / v.cols;
-    const tiles = Array.from({ length: v.tiles }, (_, k) => `<span class="pv-tile"><span style="background:${tileGrad(k)}"></span></span>`).join('');
-    return `
-        <div class="plan-visual" data-tiles="${v.tiles}" aria-hidden="true">
-          <div class="pv-grid" style="--cols:${v.cols};--rows:${rows}">${tiles}</div>
-          <span class="pv-corner">${v.tiles === 1 ? '1×' : v.tiles + '×'}</span>
-          <span class="pv-status"><i></i><span data-pv-text>${v.idle}</span></span>
-        </div>`;
+  const ROW_SIZES = [7, 9, 6, 8];   // unique images per row (5–10)
+  const visualHTML = (p, planIndex) => {
+    if (!p.rows) return '';
+    const rows = Array.from({ length: p.rows }, (_, r) => {
+      const n = ROW_SIZES[r % ROW_SIZES.length];
+      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="background:${tileGrad(k + r * 5 + planIndex * 11)}"></span>`).join('');
+      // three copies of the set so the loop never shows a gap at any card width
+      return `<div class="pv-row"><div class="pv-track" style="--n:${n}">${set}${set}${set}</div></div>`;
+    }).join('');
+    return `<div class="plan-visual" aria-hidden="true">${rows}</div>`;
   };
   const planHTML = (p, i) => `
     <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}" style="--i:${i}">
       <div class="critters" aria-hidden="true">${STRIPES}${CRITTERS[p.critters] || ''}</div>
-      <div class="plan-head">${visualHTML(p)}
+      <div class="plan-head">${visualHTML(p, i)}
         <div class="plan-intro">
           <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Popular</span>' : ''}</div>
           <p class="plan-for">${p.for}</p>
@@ -178,51 +178,18 @@
   const plansEl = $('#plans');
   plansEl.innerHTML = PLANS.map(planHTML).join('');
 
-  // Plan visual: run the "generation" on the card's tiles.
-  function runVisual(card, p) {
-    const v = p.visual, box = card.querySelector('.plan-visual');
-    if (!v || !box || box.dataset.state === 'busy') return;
-    const imgs = [...box.querySelectorAll('.pv-tile > span')];
-    const text = box.querySelector('[data-pv-text]');
-    const n = imgs.length, D = v.dur;
-    const done = () => { box.dataset.state = 'done'; text.textContent = n === 1 ? '1 image ready' : `${n} images ready`; };
-    imgs.forEach(el => el.getAnimations().forEach(a => a.cancel()));
-    if (reduce) { box.dataset.state = 'done'; done(); return; }
-    // Each tile starts on a wave across the grid (with a little jitter) and
-    // wipes up over a quarter of the run; a single image takes the whole run.
-    const T = n === 1 ? D : D * 0.25;
-    const ends = imgs.map((el, k) => {
-      const delay = n === 1 ? 0 : ((k / n) * 0.7 + ((k * 37) % 11) / 110) * D * 0.75;
-      el.animate([{ clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0 0 0 0)' }],
-                 { duration: T, delay, easing: EASE_OUT, fill: 'both' });
-      return delay + T;
-    });
-    box.dataset.state = 'busy';
-    const t0 = performance.now(), last = Math.max(...ends);
-    const tick = () => {
-      const t = performance.now() - t0;
-      if (t >= last) return done();
-      text.textContent = n === 1 ? `Generating ${Math.round(t / last * 100)}%` : `Generating ${ends.filter(e => e <= t).length}/${n}`;
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
-  PLANS.forEach(p => {
-    const card = plansEl.querySelector(`[data-plan="${p.id}"]`);
-    if (!card) return;
-    const go = () => runVisual(card, p);
-    if (matchMedia('(hover: hover) and (pointer: fine)').matches) card.addEventListener('mouseenter', go);
-    card.addEventListener('focusin', e => { if (e.target.matches(':focus-visible')) go(); });
+  // Plan visual: hovering (or keyboard focus inside) a card speeds its rows up;
+  // playbackRate keeps each row's position, so the change is seamless.
+  plansEl.querySelectorAll('.plan').forEach(card => {
+    const rows = () => [...card.querySelectorAll('.pv-track')].flatMap(t => t.getAnimations());
+    const speed = r => rows().forEach(a => a.updatePlaybackRate ? a.updatePlaybackRate(r) : (a.playbackRate = r));
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      card.addEventListener('mouseenter', () => speed(4));
+      card.addEventListener('mouseleave', () => speed(1));
+    }
+    card.addEventListener('focusin', e => { if (e.target.matches(':focus-visible')) speed(4); });
+    card.addEventListener('focusout', () => { if (!card.matches(':hover')) speed(1); });
   });
-  // Touch screens have no hover: run each card once, the first time it's mostly in view.
-  if (!matchMedia('(hover: hover) and (pointer: fine)').matches && 'IntersectionObserver' in window) {
-    const io = new IntersectionObserver(entries => entries.forEach(en => {
-      if (!en.isIntersecting) return;
-      io.unobserve(en.target);
-      runVisual(en.target, PLANS.find(p => p.id === en.target.dataset.plan));
-    }), { threshold: 0.6 });
-    plansEl.querySelectorAll('.plan').forEach(c => io.observe(c));
-  }
 
   // Seat steppers: one per paid plan, clamped to that plan's own range
   $$('.seat-row[data-seats]', plansEl).forEach(row => {

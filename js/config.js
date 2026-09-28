@@ -40,7 +40,7 @@ const PLANS = [
     ],
     seats: null,  // one seat only: no selector (the card keeps the space so CTAs align)
     critters: 'creator',
-    visual: { tiles: 1, cols: 1, idle: '1 image', dur: 1600 },
+    rows: 1,
   },
   {
     id: 'pro',
@@ -66,7 +66,7 @@ const PLANS = [
     ],
     seats: { min: 1, max: 10, default: 1 },
     critters: 'pro',
-    visual: { tiles: 50, cols: 10, idle: 'Batch of 50', dur: 2400 },
+    rows: 2,
   },
   {
     id: 'max',
@@ -88,7 +88,7 @@ const PLANS = [
     ],
     seats: { min: 1, max: 10, default: 1 },
     critters: 'max',
-    visual: { tiles: 200, cols: 20, idle: 'Batch of 200', dur: 3000 },
+    rows: 4,
   },
 ];
 
