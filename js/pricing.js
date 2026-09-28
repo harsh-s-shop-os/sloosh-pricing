@@ -137,8 +137,9 @@
   ];
   const TILE_ANGLES = [135, 160, 200, 120, 45, 90, 225];
   const tileGrad = k => { const [a, b] = TILE_GRADS[(k * 7) % TILE_GRADS.length]; return `linear-gradient(${TILE_ANGLES[(k * 3) % TILE_ANGLES.length]}deg, hsl(var(${a})), hsl(var(${b})))`; };
-  // Soft, dreamy Unsplash stills (aurora, milky way, sunset water, misty peaks, wildflowers) — picked to sit
-  // quietly behind each plan's copy. Requested small (240px, q=60): these are background thumbnails, not hero art.
+  // Soft, dreamy stills (aurora, milky way, sunset water, misty peaks, wildflowers) — picked to sit quietly
+  // behind each plan's copy. Sourced from Unsplash at 240px/q60 and saved locally under public/pricing/ (via
+  // asset(), same as the critter SVGs below) so the strip works offline and in the single-file build.
   const TILE_PHOTOS = [
     '1439853949127-fa647821eba0', '1502082553048-f009c37129b9', '1476514525535-07fb3b4ae5f1',
     '1505142468610-359e7d316be0', '1470770903676-69b98201ea1c', '1531366936337-7c912a4589a7',
@@ -153,9 +154,9 @@
     '1494548162494-384bba4ab999', '1476611317561-60117649dd94',
   ];
   const tileImg = k => {
-    const id = TILE_PHOTOS[k % TILE_PHOTOS.length];
-    // gradient first so it's what renders instantly; the photo layers on top once it loads, same as background-size below.
-    return `background-image:url('https://images.unsplash.com/photo-${id}?w=240&h=240&fit=crop&q=60'),${tileGrad(k)}`;
+    const id = TILE_PHOTOS[k % TILE_PHOTOS.length].split('-')[0];
+    // gradient first so it's what renders instantly; the local photo layers on top once it loads.
+    return `background-image:url('${asset(`pricing/plan-${id}.jpg`)}'),${tileGrad(k)}`;
   };
   const ROW_SIZES = [7, 9, 6, 8];   // unique images per row (5–10)
   const STRIP = 160, GAP = 8, SPEED = 20;
