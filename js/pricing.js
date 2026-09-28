@@ -90,6 +90,7 @@
     chicken: (l, b, g) => `<div class="critter flip" style="left:${l}px;width:48.9px;height:72px;bottom:${b}px"><img alt="" src="${asset(`pricing/chicken${g ? '-grey' : ''}.svg`)}" style="inset:0;width:100%;height:100%"></div>`,
     dog: (l, b, g) => `<div class="critter dog" style="left:${l}px;width:72.67px;height:71.7px;bottom:${b}px">
         <img alt="" src="${asset(`pricing/dog-body${g ? '-grey' : ''}.svg`)}" style="left:0;top:0;width:72.67px;height:71.7px">
+        ${g ? `<img alt="" class="lid" src="${asset('pricing/dog-eye-1-lid.svg')}" style="left:26.5px;top:14.7px;width:8.2px;height:8.6px"><img alt="" class="lid" src="${asset('pricing/dog-eye-2-lid.svg')}" style="left:14.6px;top:12.1px;width:8.2px;height:8.7px">` : ''}
         <img alt="" src="${asset('pricing/dog-eye-1.svg')}" style="left:26.5px;top:14.7px;width:8.2px;height:8.6px">
         <img alt="" src="${asset('pricing/dog-eye-2.svg')}" style="left:14.6px;top:12.1px;width:8.2px;height:8.7px">
         <img alt="" class="dog-pupil" src="${asset('pricing/dog-pupil-1.svg')}" style="left:26.8px;top:15.9px;width:5.48px;height:5.87px">
