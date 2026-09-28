@@ -183,42 +183,6 @@
   const plansEl = $('#plans');
   plansEl.innerHTML = PLANS.map(planHTML).join('');
 
-  /* Plan visual: fan. Images keep their shape; each one tilts and lifts by
-     where it currently sits across the card — flat and lowest in the middle,
-     rising and rotating outward towards the edges — so the grid reads as a
-     fan opening from the top (a U). Rows keep scrolling, so this is updated
-     every frame, only while the card is on screen. */
-  const FAN_TILT = 12;   // degrees at the card's left/right edge
-  const FAN_LIFT = 26;   // px an image rises at the edge
-  const fans = [...plansEl.querySelectorAll('.plan-visual')].map(v => ({
-    v, on: false, w: 0,
-    tracks: [...v.querySelectorAll('.pv-track')].map(t => ({ t, imgs: [...t.children].map(el => ({ el, c: 0 })) })),
-  }));
-  const measureFans = () => fans.forEach(f => {
-    f.w = f.v.clientWidth;
-    f.tracks.forEach(tr => tr.imgs.forEach(im => { im.c = im.el.offsetLeft + im.el.offsetWidth / 2; }));
-  });
-  const paintFan = f => {
-    const half = f.w / 2;
-    f.tracks.forEach(tr => {
-      const shift = new DOMMatrixReadOnly(getComputedStyle(tr.t).transform).m41;
-      tr.imgs.forEach(im => {
-        const x = im.c + shift;
-        if (x < -80 || x > f.w + 80) return;   // off-card: skip the write
-        const nx = Math.max(-1.3, Math.min(1.3, (x - half) / half));
-        im.el.style.transform = `translateY(${(-FAN_LIFT * nx * nx).toFixed(2)}px) rotate(${(-FAN_TILT * nx).toFixed(2)}deg)`;
-      });
-    });
-  };
-  measureFans();
-  fans.forEach(paintFan);
-  if ('IntersectionObserver' in window) {
-    const fanIO = new IntersectionObserver(es => es.forEach(e => { const f = fans.find(x => x.v === e.target); if (f) f.on = e.isIntersecting; }));
-    fans.forEach(f => fanIO.observe(f.v));
-  } else fans.forEach(f => { f.on = true; });
-  if (!reduce) { const loop = () => { fans.forEach(f => f.on && paintFan(f)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
-  let fanT; addEventListener('resize', () => { clearTimeout(fanT); fanT = setTimeout(() => { measureFans(); fans.forEach(paintFan); }, 150); });
-
   // Plan visual: hovering (or keyboard focus inside) a card speeds its rows up;
   // playbackRate keeps each row's position, so the change is seamless.
   plansEl.querySelectorAll('.plan').forEach(card => {
