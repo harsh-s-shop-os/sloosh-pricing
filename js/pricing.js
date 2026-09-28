@@ -223,16 +223,16 @@
   const plansEl = $('#plans');
   plansEl.innerHTML = PLANS.map(planHTML).join('');
 
-  // Plan visual: hovering (or keyboard focus inside) a card speeds its rows up;
+  // Plan visual: hovering (or keyboard focus inside) a card slows its rows down;
   // playbackRate keeps each row's position, so the change is seamless.
   plansEl.querySelectorAll('.plan').forEach(card => {
     const rows = () => [...card.querySelectorAll('.pv-track')].flatMap(t => t.getAnimations());
     const speed = r => rows().forEach(a => a.updatePlaybackRate ? a.updatePlaybackRate(r) : (a.playbackRate = r));
     if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      card.addEventListener('mouseenter', () => speed(4));
+      card.addEventListener('mouseenter', () => speed(0.25));
       card.addEventListener('mouseleave', () => speed(1));
     }
-    card.addEventListener('focusin', e => { if (e.target.matches(':focus-visible')) speed(4); });
+    card.addEventListener('focusin', e => { if (e.target.matches(':focus-visible')) speed(0.25); });
     card.addEventListener('focusout', () => { if (!card.matches(':hover')) speed(1); });
   });
 
