@@ -151,16 +151,14 @@ ul { padding: 0; list-style: none; }
 .seat-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .seat-row .label { margin-bottom: 2px; font-size: 14px; line-height: 20px; color: hsl(var(--foreground-subtle)); }
 .seat-note { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); }
-.stepper { display: flex; align-items: center; gap: 14px; height: 36px; padding: 0 8px; border-radius: var(--radius-xl); background: hsl(var(--muted)); flex: none; }
-.stepper-btn { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; color: hsl(var(--foreground)); transition: background-color var(--motion-duration-enter) var(--motion-ease-out); }
+.stepper { display: flex; align-items: center; gap: 16px; height: 40px; padding: 0 10px; border-radius: var(--radius-xl); background: hsl(var(--muted)); flex: none; }
+.stepper-btn { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: hsl(var(--foreground)); transition: background-color var(--motion-duration-enter) var(--motion-ease-out); }
 .stepper-btn:hover:not(:disabled) { background: hsl(var(--border-strong)); }
 .stepper-btn:disabled { color: hsl(var(--muted-foreground)); opacity: .45; cursor: not-allowed; }
-.stepper-btn svg { width: 14px; height: 14px; }
-.stepper-val { min-width: 14px; text-align: center; font-size: 15px; line-height: 1; font-variant-numeric: tabular-nums; }
+.stepper-btn svg { width: 16px; height: 16px; }
+.stepper-val { min-width: 14px; text-align: center; font-size: 16px; line-height: 1; font-variant-numeric: tabular-nums; }
 
-.cta-group { display: flex; flex-direction: column; gap: 8px; }
 .plan-cta { width: 100%; }
-.cta-note { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); text-align: center; text-wrap: pretty; }
 
 .plan-body { position: relative; display: flex; flex-direction: column; gap: 20px; padding: 24px 24px 96px; flex: 1; }
 .info { position: relative; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; color: hsl(var(--muted-foreground)); }

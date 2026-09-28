@@ -84,10 +84,7 @@
           <span class="price-per" data-per>${p.per}</span>
         </p>
         <p class="billed" data-billed aria-live="polite"></p>${seatRowHTML(p)}
-        <div class="cta-group">
-          <a class="btn btn-md ${p.featured ? 'btn-brand' : 'btn-secondary'} plan-cta" href="${p.href}">${p.cta} ${I.arrow}</a>
-          <p class="cta-note">${p.note}</p>
-        </div>
+        <a class="btn btn-md ${p.featured ? 'btn-brand' : 'btn-secondary'} plan-cta" href="${p.href}">${p.cta} ${I.arrow}</a>
       </div>
       <div class="plan-body">
         <p class="credits-line"><span><strong data-credits="${p.credits}">${fmt(p.credits)}</strong> ${p.creditsLabel}</span>
