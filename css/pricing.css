@@ -247,11 +247,11 @@ ul { padding: 0; list-style: none; }
 .plan:has(:focus-visible) .critter { transform: translateY(0); transition-duration: var(--motion-duration-enter); }
 @media (hover: hover) and (pointer: fine) {
   .plan:hover .critter { transform: translateY(0); transition-duration: var(--motion-duration-enter); }
-  .plan:hover .critter:nth-child(4) { transition-delay: .03s; }
-  .plan:hover .critter:nth-child(5) { transition-delay: .06s; }
-  .plan:hover .critter:nth-child(6) { transition-delay: .09s; }
-  .plan:hover .critter:nth-child(7) { transition-delay: .12s; }
+  .plan:hover .critter:nth-child(3) { transition-delay: .03s; }
+  .plan:hover .critter:nth-child(4) { transition-delay: .06s; }
+  .plan:hover .critter:nth-child(5) { transition-delay: .09s; }
 }
+.critter-group { position: absolute; left: 50%; bottom: 0; height: 80px; transform: translateX(-50%); }
 .critter img { position: absolute; max-width: none; display: block; }
 .critter.flip > img:first-child { transform: scaleX(-1); }
 @media (prefers-reduced-motion: reduce) {
@@ -275,7 +275,8 @@ ul { padding: 0; list-style: none; }
 
 /* ---------- Section blocks ---------- */
 .block { padding-top: 120px; }
-.block-head { display: grid; gap: 12px; max-width: 640px; margin-bottom: 40px; }
+/* Section heads mirror the first fold: a title with its subtitle 8px below, no eyebrow tag. */
+.block-head { display: grid; gap: 8px; max-width: 640px; margin-bottom: 40px; }
 .eyebrow { font-size: 12px; line-height: 18px; color: hsl(var(--brand)); }
 .block h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
 .lede { max-width: 512px; color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: pretty; }

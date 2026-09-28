@@ -94,10 +94,14 @@
         <img alt="" class="dog-pupil" src="${asset('pricing/dog-pupil-2.svg')}" style="left:14.67px;top:13.3px;width:5.68px;height:5.87px">
       </div>`,
   };
+  /* Each card's mascots sit in a group sized to its own extent and centred in
+     the card, so they peek up in the middle whatever the card width. Offsets
+     are the dev page's spacing, shifted so the group starts at 0. */
+  const group = (w, html) => `<div class="critter-group" style="width:${w}px">${html}</div>`;
   const CRITTERS = {
-    creator: C.cat(94, 0) + C.parrot(175.27, 0),
-    pro: C.mouse(26.5, 1) + C.cat(103, 0) + C.parrot(184, -1) + C.chicken(242.5, 0),
-    max: C.mouse(-13.46, 3) + C.cat(63, -2) + C.parrot(144.52, -2) + C.chicken(202.88, 2) + C.dog(260.4, -1),
+    creator: group(130.89, C.cat(0, 0) + C.parrot(81.27, 0)),
+    pro: group(264.9, C.mouse(0, 1) + C.cat(76.5, 0) + C.parrot(157.5, -1) + C.chicken(216, 0)),
+    max: group(346.53, C.mouse(0, 3) + C.cat(76.46, -2) + C.parrot(157.98, -2) + C.chicken(216.34, 2) + C.dog(273.86, -1)),
   };
 
   /* ---------- Plans ---------- */
