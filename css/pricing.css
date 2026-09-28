@@ -107,6 +107,16 @@ ul { padding: 0; list-style: none; }
   transition: border-color var(--motion-duration-enter) var(--motion-ease-out);
   isolation: isolate;
 }
+/* Load-in: cards rise into place once, staggered left to right. */
+.plan {
+  opacity: 0; transform: translateY(28px);
+  animation: plan-in .6s var(--motion-ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+@keyframes plan-in { to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .plan { opacity: 1; transform: none; animation: none; }
+}
 .plan:hover { border-color: hsl(var(--border-strong)); }
 .plan.featured { border-color: hsl(var(--brand) / .45); }
 .plan.featured:hover { border-color: hsl(var(--brand) / .7); }

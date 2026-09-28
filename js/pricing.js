@@ -59,8 +59,8 @@
       <li class="${p.id === 'creator' ? 'na' : ''}"><span>4K images</span><span>${p.id === 'creator' ? 'Pro and Max' : n(COST.img4k)}</span></li>
       <li><span>8-second videos</span><span>${n(COST.video8)}</span></li></ul>`;
   };
-  const planHTML = p => `
-    <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}">
+  const planHTML = (p, i) => `
+    <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}" style="--i:${i}">
       <div class="critters" aria-hidden="true">${STRIPES}${CRITTERS[p.critters] || ''}</div>
       <div class="plan-head">
         <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Most popular</span>' : ''}</div>
