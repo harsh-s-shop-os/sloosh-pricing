@@ -129,9 +129,9 @@ ul { padding: 0; list-style: none; }
 }
 /* Load-in: cards rise into place once, staggered left to right. */
 .plan {
-  opacity: 0; transform: translateY(16px);
-  animation: plan-in .5s var(--motion-ease-out) forwards;
-  animation-delay: calc(var(--i, 0) * 60ms);
+  opacity: 0; transform: translateY(24px);
+  animation: plan-in .9s var(--motion-ease-out) forwards;   /* was .5s: too quick to register */
+  animation-delay: calc(80ms + var(--i, 0) * 140ms);   /* was 60ms apart */
 }
 @keyframes plan-in { to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
