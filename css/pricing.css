@@ -515,19 +515,23 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 
 /* ---------- Gallery: image rows ----------
    Heading uses the same .block-head styles as every other section. */
-/* No heading: the section is just the two rows. The section is full-bleed and clips, so the top row
+/* No heading. Row 2 lives here (cut by the FAQ band below); row 1 lives at the top of Compare (.gal-top).
+   Previously: the section is just the two rows. The section is full-bleed and clips, so the top row
    is cut by its top edge and the bottom row by its bottom edge (flush against the FAQ band): they peek in. */
 .gallery { margin-top: 120px; margin-inline: calc(50% - 50vw); overflow: hidden; }
 .gallery + .band { margin-top: 0; }
-.gal-row:first-child { margin-top: -100px; }   /* 280px tiles, 180px visible */
-.gal-row:last-child { margin-bottom: -80px; }  /* 220px tiles, 140px visible */
+.gal-row-1 { margin-top: -100px; }   /* 280px tiles, 180px visible */
+.gal-row-2 { margin-bottom: -80px; }  /* 220px tiles, 140px visible */
 .gal { display: grid; gap: 16px; overflow: hidden;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
 .gal-track { display: flex; width: max-content; animation: pv-drift 150s linear infinite; }
-.gal-row:nth-child(2) .gal-track { animation-direction: reverse; }
+.gal-row-2 .gal-track { animation-direction: reverse; }
+/* Row 1 sits at the top of Compare, flush under the yellow band (cancels the section's top padding), and clips
+   so the band's edge cuts it; the heading keeps its usual 120px below it. */
+.gal-top { margin-top: -120px; margin-bottom: 120px; margin-inline: calc(50% - 50vw); }
 .gal-img { flex: none; width: 280px; height: 280px; margin-right: 16px; border-radius: var(--radius-card); background: hsl(var(--card)) center / cover; }
-.gal-row:nth-child(2) .gal-img { width: 220px; height: 220px; }
+.gal-row-2 .gal-img { width: 220px; height: 220px; }
 @media (prefers-reduced-motion: reduce) { .gal-track { animation: none; transform: translateX(-33.3333%); } }
 
 /* ---------- FAQ: light band ---------- */
@@ -541,12 +545,13 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 @media (max-width: 900px) {
   .band { padding-block: 88px; margin-top: 88px; }
   .gallery { margin-top: 88px; }
+  .gal-top { margin-top: -88px; margin-bottom: 88px; }
 }
 @media (max-width: 640px) {
   .gal-img { width: 180px; height: 180px; }
-  .gal-row:nth-child(2) .gal-img { width: 140px; height: 140px; }
-  .gal-row:first-child { margin-top: -64px; }
-  .gal-row:last-child { margin-bottom: -50px; }
+  .gal-row-2 .gal-img { width: 140px; height: 140px; }
+  .gal-row-1 { margin-top: -64px; }
+  .gal-row-2 { margin-bottom: -50px; }
 }
 
 /* ---------- Calculator critters ----------

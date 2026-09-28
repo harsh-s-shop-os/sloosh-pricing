@@ -450,9 +450,12 @@
   if (galEl) {
     const half = Math.ceil(TILE_PHOTOS.length / 2);
     const sets = [TILE_PHOTOS.slice(0, half), TILE_PHOTOS.slice(half)];
-    galEl.innerHTML = sets.map((ids, r) => {
+    const rowHTML = (ids, r) => {
       const set = ids.map(id => `<span class="gal-img" style="background-image:url('${asset(`pricing/plan-${id}.jpg`)}')"></span>`).join('');
-      return `<div class="gal-row"><div class="gal-track" style="animation-duration:${(ids.length * 9 + r * 8)}s">${set}${set}${set}</div></div>`;
-    }).join('');
+      return `<div class="gal-row gal-row-${r + 1}"><div class="gal-track" style="animation-duration:${(ids.length * 9 + r * 8)}s">${set}${set}${set}</div></div>`;
+    };
+    // Row 1 opens the Compare section (cut by the yellow band above); row 2 closes it (cut by the FAQ band below).
+    $('#gal-top').innerHTML = rowHTML(sets[0], 0);
+    galEl.innerHTML = rowHTML(sets[1], 1);
   }
 })();
