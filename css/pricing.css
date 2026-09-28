@@ -149,12 +149,14 @@ ul { padding: 0; list-style: none; }
    aligned); rows stack from its bottom and fade out towards the top edge. */
 .plan-visual {
   --img-gap: 8px;
-  margin: -24px -24px 0; height: 160px; overflow: hidden; perspective: 900px; perspective-origin: 50% 100%; border-radius: var(--radius-card) var(--radius-card) 0 0;
+  margin: -24px -24px 0; height: 160px; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
-.pv-lens { height: 100%; margin: 0 -25%; display: flex; flex-direction: column-reverse; gap: var(--img-gap);
-  /* the whole set tilts as one plane: top leans away, bottom edge stays put, so every card's last row ends at the same line */
-  transform: rotateX(18deg); transform-origin: 50% 100%; }
-.pv-row { flex: none; }
+.pv-lens { height: 100%; margin: 0 -25%; display: flex; flex-direction: column-reverse; gap: var(--img-gap); }  /* wider than the card so tilted rows still reach both edges */
+/* Each row tilts back on its own: top leans away, bottom edge stays put. The real row is --img tall; the negative
+   margin shrinks its footprint to --slot (its tilted height), so rows stack snugly and the bottom row always ends
+   at the strip's bottom edge. 18deg / 600px are mirrored in js (TILT, PERSP). */
+.pv-row { flex: none; height: var(--img); margin-top: calc(var(--slot) - var(--img));
+  transform: perspective(600px) rotateX(18deg); transform-origin: 50% 100%; }
 .pv-track { display: flex; width: max-content; animation: pv-drift 30s linear infinite; }
 /* alternate rows run the other way (rows are listed bottom-up) */
 .pv-row:nth-child(even) .pv-track { animation-direction: reverse; }  /* bottom row (child 1) moves right, then alternate */

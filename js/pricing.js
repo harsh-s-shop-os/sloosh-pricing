@@ -138,20 +138,25 @@
   const TILE_ANGLES = [135, 160, 200, 120, 45, 90, 225];
   const tileGrad = k => { const [a, b] = TILE_GRADS[(k * 7) % TILE_GRADS.length]; return `linear-gradient(${TILE_ANGLES[(k * 3) % TILE_ANGLES.length]}deg, hsl(var(${a})), hsl(var(${b})))`; };
   const ROW_SIZES = [7, 9, 6, 8];   // unique images per row (5–10)
-  const STRIP = 160, GAP = 8, SPEED = 20;   // strip height (px), gap (px), drift speed (px/s)
+  const STRIP = 160, GAP = 8, SPEED = 20;
+  const TILT = 18, PERSP = 600;   // per-row tilt (deg) and perspective depth (px) — mirrored in .pv-row   // strip height (px), gap (px), drift speed (px/s)
   const visualHTML = (p, planIndex) => {
     if (!p.rows) return '';
     // Square images sized so the rows exactly fill the strip: 1 row = big, 2 = medium, 4 = small.
-    const size = (STRIP - GAP * (p.rows - 1)) / p.rows;
-    // Two extra rows sit above the strip: the tilt foreshortens the set, and these fill the space it frees at the top.
-    const rows = Array.from({ length: p.rows + 2 }, (_, i) => i).map(r => {
+    // Each row tilts back on its own (see .pv-row), which makes it look shorter. `slot` is the height a row
+    // should look after the tilt; `size` is the real square size that tilts down to exactly that, so the rows
+    // still fill the strip edge to edge: slot = size·cos·P / (P + size·sin).
+    const slot = (STRIP - GAP * (p.rows - 1)) / p.rows;
+    const rad = TILT * Math.PI / 180, c = Math.cos(rad), sn = Math.sin(rad);
+    const size = slot * PERSP / (c * PERSP - slot * sn);
+    const rows = Array.from({ length: p.rows }, (_, i) => i).map(r => {
       const n = ROW_SIZES[(r + 4) % ROW_SIZES.length];
       const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="background:${tileGrad(k + r * 5 + planIndex * 11)}"></span>`).join('');
       const dur = (n * (size + GAP)) / SPEED * (r % 2 ? 1.15 : 1);   // same on-screen speed at any size
       // three copies of the set so the loop never shows a gap at any card width
       return `<div class="pv-row"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
     }).join('');
-    return `<div class="plan-visual" style="--img:${size}px" aria-hidden="true"><div class="pv-lens">${rows}</div></div>`;
+    return `<div class="plan-visual" style="--img:${size.toFixed(2)}px;--slot:${slot.toFixed(2)}px" aria-hidden="true"><div class="pv-lens">${rows}</div></div>`;
   };
   const planHTML = (p, i) => `
     <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}" style="--i:${i}">
