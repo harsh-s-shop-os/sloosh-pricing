@@ -150,7 +150,7 @@
       // three copies of the set so the loop never shows a gap at any card width
       return `<div class="pv-row"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
     }).join('');
-    return `<div class="plan-visual" style="--img:${size}px" aria-hidden="true">${rows}</div>`;
+    return `<div class="plan-visual" style="--img:${size}px" aria-hidden="true"><div class="pv-lens">${rows}</div></div>`;
   };
   const planHTML = (p, i) => `
     <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}" style="--i:${i}">
@@ -181,6 +181,46 @@
     </article>`;
   const plansEl = $('#plans');
   plansEl.innerHTML = PLANS.map(planHTML).join('');
+
+  /* Plan visual: concave-lens curve over the whole strip (not per row). An SVG
+     displacement map, built to the strip's size, magnifies towards the left
+     and right edges around a horizon at the strip's bottom, so the rows bow
+     up into a shallow bowl — more at the top rows, the bottom row near
+     straight — and nothing is pulled in from outside the strip. */
+  const LENS = 0.16;   // extra magnification at the far edges (0 = flat)
+  function buildLens() {
+    const box = plansEl.querySelector('.pv-lens');
+    if (!box) return;
+    const w = Math.round(box.clientWidth), h = Math.round(box.clientHeight);
+    if (!w || !h) return;
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const ctx = cv.getContext('2d'), img = ctx.createImageData(w, h), d = img.data;
+    const cx = w / 2, y0 = h, maxShift = Math.max(cx, h) * (1 - 1 / (1 + LENS)), scale = maxShift * 2 + 2;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      const nx = (x - cx) / cx, m = 1 + LENS * nx * nx, k = 1 / m - 1;
+      const dx = (x - cx) * k, dy = (y - y0) * k, i = (y * w + x) * 4;
+      d[i] = 128 + dx / scale * 255; d[i + 1] = 128 + dy / scale * 255; d[i + 2] = 128; d[i + 3] = 255;
+    }
+    ctx.putImageData(img, 0, 0);
+    let svg = document.getElementById('pv-lens-svg');
+    if (!svg) {
+      svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.id = 'pv-lens-svg'; svg.setAttribute('width', '0'); svg.setAttribute('height', '0'); svg.setAttribute('aria-hidden', 'true');
+      svg.style.position = 'absolute';
+      svg.innerHTML = `<filter id="pv-lens" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+        <feImage result="map" preserveAspectRatio="none" x="0" y="0"/>
+        <feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G" result="bent"/>
+        <feGaussianBlur in="bent" stdDeviation="0.4"/></filter>`;  // tiny blur smooths the stair-steps displacement leaves on edges
+      document.body.appendChild(svg);
+    }
+    const fe = svg.querySelector('feImage');
+    fe.setAttribute('width', w); fe.setAttribute('height', h);
+    fe.setAttribute('href', cv.toDataURL()); fe.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', cv.toDataURL());
+    svg.querySelector('feDisplacementMap').setAttribute('scale', scale.toFixed(1));
+    plansEl.classList.add('has-lens');
+  }
+  buildLens();
+  let lensT; addEventListener('resize', () => { clearTimeout(lensT); lensT = setTimeout(buildLens, 150); });
 
   // Plan visual: hovering (or keyboard focus inside) a card speeds its rows up;
   // playbackRate keeps each row's position, so the change is seamless.

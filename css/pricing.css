@@ -150,9 +150,11 @@ ul { padding: 0; list-style: none; }
 .plan-visual {
   --img-gap: 8px;
   margin: -24px -24px 0; height: 160px; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0;
-  display: flex; flex-direction: column-reverse; gap: var(--img-gap);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 75%); mask-image: linear-gradient(to bottom, transparent 0, #000 75%);
 }
+.pv-lens { height: 100%; display: flex; flex-direction: column-reverse; gap: var(--img-gap); }
+/* the whole strip is seen through one concave lens (map built in JS) */
+.has-lens .pv-lens { filter: url(#pv-lens); }
 .pv-row { flex: none; overflow: hidden; }
 .pv-track { display: flex; width: max-content; animation: pv-drift 30s linear infinite; }
 /* alternate rows run the other way (rows are listed bottom-up) */
