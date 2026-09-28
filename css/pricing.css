@@ -545,8 +545,8 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
    peek up over the calculator card's top-right edge; switching the plan tab
    drops the old set behind the edge and raises the new one. */
 .calc { position: relative; }
-.calc-peek { position: absolute; right: 32px; bottom: 100%; width: 360px; height: 80px; overflow: hidden; pointer-events: none; }
-.calc-peek .critter-group { left: auto; right: 0; transform: none; }
+.calc-peek { position: absolute; right: 32px; bottom: 100%; width: 420px; height: 92px; overflow: hidden; pointer-events: none; }
+.calc-peek .critter-group { left: auto; right: 0; transform: scale(1.15); transform-origin: 100% 100%; }   /* animals 15% bigger, anchored to the card's top-right */
 .calc-peek .critter { transform: translateY(110%); transition: transform var(--motion-duration-exit) var(--motion-ease-in); }
 .calc-peek .critter-group[data-on] .critter {
   transform: translateY(16px);   /* sits lower: the card edge cuts off more of each animal */
