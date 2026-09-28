@@ -549,7 +549,7 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 .calc-peek .critter-group { left: auto; right: 0; transform: none; }
 .calc-peek .critter { transform: translateY(110%); transition: transform var(--motion-duration-exit) var(--motion-ease-in); }
 .calc-peek .critter-group[data-on] .critter {
-  transform: translateY(0);
+  transform: translateY(16px);   /* sits lower: the card edge cuts off more of each animal */
   transition: transform var(--motion-duration-enter) var(--motion-ease-out);
   transition-delay: 120ms;   /* let the outgoing set drop first */
 }
