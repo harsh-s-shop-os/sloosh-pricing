@@ -586,3 +586,4 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 
 /* Section subcopy hidden (copy kept in index.html; delete this rule to bring it back). */
 .hero-sub, .block-head .lede, .closing > p { display: none; }
+.closing > .btn { margin-top: 12px; }  /* keeps 24px between the title and the button now the line between them is hidden */
