@@ -144,6 +144,28 @@ ul { padding: 0; list-style: none; }
 .plan-head { position: relative; display: flex; flex-direction: column; gap: 32px; padding: 24px; border-bottom: 1px solid hsl(var(--border)); }
 /* Card top = three groups: intro (name + subtitle), pricing (price + yearly
    line), action (seats + CTA). Tight inside a group, 32px between groups. */
+/* Plan visual: a dark frame of gradient tiles (1 / 50 / 200). Idle tiles show
+   as a dim preview; while generating, each tile is clipped and wipes up. */
+.plan-visual { position: relative; height: 150px; border-radius: var(--radius-2xl); background: hsl(var(--background)); border: 1px solid hsl(var(--border)); overflow: hidden; }
+.pv-grid { position: absolute; inset: 10px; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); grid-template-rows: repeat(var(--rows), minmax(0, 1fr)); gap: 4px; }
+.plan-visual[data-tiles="1"] .pv-grid { gap: 0; }
+.plan-visual[data-tiles="200"] .pv-grid { gap: 2px; }
+.pv-tile { position: relative; overflow: hidden; border-radius: 3px; background: hsl(var(--muted)); }
+.plan-visual[data-tiles="1"] .pv-tile { border-radius: var(--radius-xl); }
+.plan-visual[data-tiles="200"] .pv-tile { border-radius: 2px; }
+.pv-tile > span { position: absolute; inset: 0; opacity: .35; }
+.plan-visual[data-state] .pv-tile > span { opacity: 1; }
+.pv-corner { position: absolute; top: 16px; right: 16px; padding: 0 8px; border-radius: 999px; background: hsl(var(--background) / .82); font-size: 12px; line-height: 22px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+.pv-status {
+  position: absolute; left: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 8px;
+  padding: 4px 10px; border-radius: 999px; background: hsl(var(--background) / .82);
+  font-size: 12px; line-height: 18px; color: hsl(var(--foreground)); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.pv-status i { width: 6px; height: 6px; border-radius: 50%; background: hsl(var(--muted-foreground)); flex: none; }
+.plan-visual[data-state="busy"] .pv-status i { background: hsl(var(--brand)); animation: pv-pulse 900ms ease-in-out infinite alternate; }
+.plan-visual[data-state="done"] .pv-status i { background: hsl(var(--success-foreground)); }
+@keyframes pv-pulse { to { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .plan-visual[data-state="busy"] .pv-status i { animation: none; } }
 .plan-intro { display: grid; gap: 4px; }
 .plan-pricing { display: grid; gap: 4px; margin-top: -5px; }  /* the 36px price line has ~5px of built-in space above the digits; this evens the visible gaps */
 .plan-action { display: grid; gap: 16px; }
