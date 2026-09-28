@@ -139,14 +139,18 @@
   const tileGrad = k => { const [a, b] = TILE_GRADS[(k * 7) % TILE_GRADS.length]; return `linear-gradient(${TILE_ANGLES[(k * 3) % TILE_ANGLES.length]}deg, hsl(var(${a})), hsl(var(${b})))`; };
   const ROW_SIZES = [7, 9, 6, 8];   // unique images per row (5–10)
   const STRIP = 160, GAP = 8, SPEED = 20;
-  const TILT = 18, PERSP = 600;   // per-row tilt (deg) and perspective depth (px) — mirrored in .pv-row   // strip height (px), gap (px), drift speed (px/s)
+  const TILT = 18, PERSP = 600;
+  // Share of the top row hidden behind the card's top edge. Creator's single row must fill the whole strip on
+  // its own, so it hides less or its images get enormous.
+  const PEEK = rows => (rows === 1 ? 0.2 : 0.35);   // per-row tilt (deg) and perspective depth (px) — mirrored in .pv-row   // strip height (px), gap (px), drift speed (px/s)
   const visualHTML = (p, planIndex) => {
     if (!p.rows) return '';
     // Square images sized so the rows exactly fill the strip: 1 row = big, 2 = medium, 4 = small.
     // Each row tilts back on its own (see .pv-row), which makes it look shorter. `slot` is the height a row
     // should look after the tilt; `size` is the real square size that tilts down to exactly that, so the rows
     // still fill the strip edge to edge: slot = size·cos·P / (P + size·sin).
-    const slot = (STRIP - GAP * (p.rows - 1)) / p.rows;
+    // The top row is cut off by the card's top edge (PEEK = share of it hidden), so it reads as peeking in.
+    const slot = (STRIP - GAP * (p.rows - 1)) / (p.rows - PEEK(p.rows));
     const rad = TILT * Math.PI / 180, c = Math.cos(rad), sn = Math.sin(rad);
     const size = slot * PERSP / (c * PERSP - slot * sn);
     const rows = Array.from({ length: p.rows }, (_, i) => i).map(r => {
