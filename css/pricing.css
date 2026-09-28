@@ -539,3 +539,23 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
   .gal-img { width: 180px; height: 180px; }
   .gal-row:nth-child(2) .gal-img { width: 140px; height: 140px; }
 }
+
+/* ---------- Calculator critters ----------
+   Moved off the plan cards. The chosen plan's animals (grey #525252 versions)
+   peek up over the calculator card's top-right edge; switching the plan tab
+   drops the old set behind the edge and raises the new one. */
+.calc { position: relative; }
+.calc-peek { position: absolute; right: 32px; bottom: 100%; width: 360px; height: 80px; overflow: hidden; pointer-events: none; }
+.calc-peek .critter-group { left: auto; right: 0; transform: none; }
+.calc-peek .critter { transform: translateY(110%); transition: transform var(--motion-duration-exit) var(--motion-ease-in); }
+.calc-peek .critter-group[data-on] .critter {
+  transform: translateY(0);
+  transition: transform var(--motion-duration-enter) var(--motion-ease-out);
+  transition-delay: 120ms;   /* let the outgoing set drop first */
+}
+.calc-peek .critter-group[data-on] .critter:nth-child(2) { transition-delay: 150ms; }
+.calc-peek .critter-group[data-on] .critter:nth-child(3) { transition-delay: 180ms; }
+.calc-peek .critter-group[data-on] .critter:nth-child(4) { transition-delay: 210ms; }
+.calc-peek .critter-group[data-on] .critter:nth-child(5) { transition-delay: 240ms; }
+@media (prefers-reduced-motion: reduce) { .calc-peek .critter, .calc-peek .critter-group[data-on] .critter { transition: none; } }
+@media (max-width: 640px) { .calc-peek { display: none; } }   /* the plan tabs fill that row on phones */

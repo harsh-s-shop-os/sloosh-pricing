@@ -82,12 +82,12 @@
   const STRIPES = `
     <div class="stripes"><div class="stripe stripe-thick"></div><div class="stripe stripe-thin"></div></div>`;
   const C = {
-    mouse: (l, b) => `<div class="critter" style="left:${l}px;width:67.71px;height:60.61px;bottom:${b}px"><img alt="" src="${asset('pricing/mouse.svg')}" style="inset:0;width:100%;height:100%"></div>`,
-    cat: (l, b) => `<div class="critter flip" style="left:${l}px;width:72px;height:72px;bottom:${b}px"><img alt="" src="${asset('pricing/cat.svg')}" style="inset:0;width:100%;height:100%"></div>`,
-    parrot: (l, b) => `<div class="critter" style="left:${l}px;width:49.62px;height:57.21px;bottom:${b}px"><img alt="" src="${asset('pricing/parrot.svg')}" style="inset:0;width:100%;height:100%"></div>`,
-    chicken: (l, b) => `<div class="critter flip" style="left:${l}px;width:48.9px;height:72px;bottom:${b}px"><img alt="" src="${asset('pricing/chicken.svg')}" style="inset:0;width:100%;height:100%"></div>`,
-    dog: (l, b) => `<div class="critter dog" style="left:${l}px;width:72.67px;height:71.7px;bottom:${b}px">
-        <img alt="" src="${asset('pricing/dog-body.svg')}" style="left:0;top:0;width:72.67px;height:71.7px">
+    mouse: (l, b, g) => `<div class="critter" style="left:${l}px;width:67.71px;height:60.61px;bottom:${b}px"><img alt="" src="${asset(`pricing/mouse${g ? '-grey' : ''}.svg`)}" style="inset:0;width:100%;height:100%"></div>`,
+    cat: (l, b, g) => `<div class="critter flip" style="left:${l}px;width:72px;height:72px;bottom:${b}px"><img alt="" src="${asset(`pricing/cat${g ? '-grey' : ''}.svg`)}" style="inset:0;width:100%;height:100%"></div>`,
+    parrot: (l, b, g) => `<div class="critter" style="left:${l}px;width:49.62px;height:57.21px;bottom:${b}px"><img alt="" src="${asset(`pricing/parrot${g ? '-grey' : ''}.svg`)}" style="inset:0;width:100%;height:100%"></div>`,
+    chicken: (l, b, g) => `<div class="critter flip" style="left:${l}px;width:48.9px;height:72px;bottom:${b}px"><img alt="" src="${asset(`pricing/chicken${g ? '-grey' : ''}.svg`)}" style="inset:0;width:100%;height:100%"></div>`,
+    dog: (l, b, g) => `<div class="critter dog" style="left:${l}px;width:72.67px;height:71.7px;bottom:${b}px">
+        <img alt="" src="${asset(`pricing/dog-body${g ? '-grey' : ''}.svg`)}" style="left:0;top:0;width:72.67px;height:71.7px">
         <img alt="" src="${asset('pricing/dog-eye-1.svg')}" style="left:26.5px;top:14.7px;width:8.2px;height:8.6px">
         <img alt="" src="${asset('pricing/dog-eye-2.svg')}" style="left:14.6px;top:12.1px;width:8.2px;height:8.7px">
         <img alt="" class="dog-pupil" src="${asset('pricing/dog-pupil-1.svg')}" style="left:26.8px;top:15.9px;width:5.48px;height:5.87px">
@@ -97,11 +97,12 @@
   /* Each card's mascots sit in a group sized to its own extent and centred in
      the card, so they peek up in the middle whatever the card width. Offsets
      are the dev page's spacing, shifted so the group starts at 0. */
-  const group = (w, html) => `<div class="critter-group" style="width:${w}px">${html}</div>`;
+  const group = (w, html, plan) => `<div class="critter-group" data-plan="${plan}" style="width:${w}px">${html}</div>`;
+  // Grey (#525252) set for the credits calculator: the chosen plan's animals peek over the card's top edge.
   const CRITTERS = {
-    creator: group(130.89, C.cat(0, 0) + C.parrot(81.27, 0)),
-    pro: group(264.9, C.mouse(0, 1) + C.cat(76.5, 0) + C.parrot(157.5, -1) + C.chicken(216, 0)),
-    max: group(346.53, C.mouse(0, 3) + C.cat(76.46, -2) + C.parrot(157.98, -2) + C.chicken(216.34, 2) + C.dog(273.86, -1)),
+    creator: group(130.89, C.cat(0, 0, 1) + C.parrot(81.27, 0, 1), 'creator'),
+    pro: group(264.9, C.mouse(0, 1, 1) + C.cat(76.5, 0, 1) + C.parrot(157.5, -1, 1) + C.chicken(216, 0, 1), 'pro'),
+    max: group(346.53, C.mouse(0, 3, 1) + C.cat(76.46, -2, 1) + C.parrot(157.98, -2, 1) + C.chicken(216.34, 2, 1) + C.dog(273.86, -1, 1), 'max'),
   };
 
   /* ---------- Plans ---------- */
@@ -172,7 +173,7 @@
   };
   const planHTML = (p, i) => `
     <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}" style="--i:${i}">
-      <div class="critters" aria-hidden="true">${STRIPES}${CRITTERS[p.critters] || ''}</div>
+      <div class="critters" aria-hidden="true">${STRIPES}</div>
       <div class="plan-head">${visualHTML(p, i)}
         <div class="plan-intro">
           <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Popular</span>' : ''}</div>
@@ -377,7 +378,13 @@
       : `Uses <b>${fmt(used)}</b> of ${fmt(p.credits)} credits (${pct}%). ${fmt(p.credits - used)} left.`;
     renderCosts(p);
   }
-  segmented($('#calc-plan'), v => { calcPlan = v; renderCalc(); });
+  const calcPeek = document.createElement('div');
+  calcPeek.className = 'calc-peek'; calcPeek.setAttribute('aria-hidden', 'true');
+  calcPeek.innerHTML = CRITTERS.creator + CRITTERS.pro + CRITTERS.max;
+  $('.calc').appendChild(calcPeek);
+  const peek = id => $$('.critter-group', calcPeek).forEach(g => g.toggleAttribute('data-on', g.dataset.plan === id));
+  peek(calcPlan);
+  segmented($('#calc-plan'), v => { calcPlan = v; renderCalc(); peek(v); });
   ids.forEach(k => range(k).addEventListener('input', renderCalc));
   renderCalc();
 
