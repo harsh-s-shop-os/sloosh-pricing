@@ -108,7 +108,9 @@
       <li class="${p.id === 'creator' ? 'na' : ''}"><span>4K images</span><span>${p.id === 'creator' ? 'Pro and Max' : n(COST.img4k)}</span></li>
       <li><span>8-second videos</span><span>${n(COST.video8)}</span></li></ul>`;
   };
-  const seatRowHTML = p => !p.seats ? '' : `
+  // Plans without seats get an empty spacer the height of the seat row, so
+  // every card's CTA lines up across the row.
+  const seatRowHTML = p => !p.seats ? '<div class="seat-spacer" aria-hidden="true"></div>' : `
         <div class="seat-row" data-seats data-min="${p.seats.min}" data-max="${p.seats.max}">
           <div>
             <p class="label">Select Seats</p>
@@ -124,14 +126,20 @@
     <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}" style="--i:${i}">
       <div class="critters" aria-hidden="true">${STRIPES}${CRITTERS[p.critters] || ''}</div>
       <div class="plan-head">
-        <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Popular</span>' : ''}</div>
-        <p class="plan-for">${p.for}</p>
-        <p class="price">
-          <span class="price-amt" data-amt><span data-cur>$${p.monthly}</span></span>
-          <span class="price-per" data-per>${p.per}</span>
-        </p>
-        <p class="billed" data-billed aria-live="polite"></p>${seatRowHTML(p)}
-        <a class="btn btn-md ${p.featured ? 'btn-brand' : 'btn-secondary'} plan-cta" href="${p.href}">${p.cta} ${I.arrow}</a>
+        <div class="plan-intro">
+          <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Popular</span>' : ''}</div>
+          <p class="plan-for">${p.for}</p>
+        </div>
+        <div class="plan-pricing">
+          <p class="price">
+            <span class="price-amt" data-amt><span data-cur>$${p.monthly}</span></span>
+            <span class="price-per" data-per>${p.per}</span>
+          </p>
+          <p class="billed" data-billed aria-live="polite"></p>
+        </div>
+        <div class="plan-action">${seatRowHTML(p)}
+          <a class="btn btn-md ${p.featured ? 'btn-brand' : 'btn-secondary'} plan-cta" href="${p.href}">${p.cta} ${I.arrow}</a>
+        </div>
       </div>
       <div class="plan-body">
         <p class="credits-line"><span><strong data-credits="${p.credits}">${fmt(p.credits)}</strong> ${p.creditsLabel}</span>
@@ -145,7 +153,7 @@
   plansEl.innerHTML = PLANS.map(planHTML).join('');
 
   // Seat steppers: one per paid plan, clamped to that plan's own range
-  $$('.seat-row', plansEl).forEach(row => {
+  $$('.seat-row[data-seats]', plansEl).forEach(row => {
     const min = +row.dataset.min, max = +row.dataset.max;
     const plan = PLANS.find(x => x.id === row.closest('[data-plan]').dataset.plan);
     const valEl = $('[data-seat-count]', row), noteEl = $('[data-seat-note]', row);
@@ -154,7 +162,7 @@
     const paint = (dir = 1) => {
       swapText(valEl, n, dir, 160);
       seatsBy[plan.id] = n; renderPrice(plan);
-      noteEl.textContent = max <= 1 ? 'Need a team? Pick Pro.' : n <= 1 ? 'Just you.' : `You + ${n - 1} teammate${n - 1 > 1 ? 's' : ''}`;
+      noteEl.textContent = n <= 1 ? 'Just you.' : `You + ${n - 1} teammate${n - 1 > 1 ? 's' : ''}`;
       minusBtn.disabled = n <= min; plusBtn.disabled = n >= max;
     };
     minusBtn.addEventListener('click', () => { if (n > min) { n--; paint(-1); } });

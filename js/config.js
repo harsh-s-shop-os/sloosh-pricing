@@ -38,7 +38,7 @@ const PLANS = [
       '3 concurrent runs',
       'Credit top-ups',
     ],
-    seats: { min: 1, max: 1, default: 1 },
+    seats: null,  // one seat only: no selector (the card keeps the space so CTAs align)
     critters: 'creator',
   },
   {
