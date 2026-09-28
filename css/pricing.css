@@ -526,20 +526,16 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 
 /* ---------- Gallery: image rows ----------
    No heading, same background as the sections around it. Two rows drift in opposite directions,
-   uncropped. Each row tilts the opposite way to the other: the top row's top edge leans towards you,
-   the bottom row's bottom edge does. Stronger than the plan cards (22deg vs 18deg, same 600px). */
+   uncropped, flat, and both rows use the same tile size. */
 .gallery { margin-top: 120px; margin-inline: calc(50% - 50vw); overflow-x: clip; }
 .gallery + .band { margin-top: 0; padding-top: 80px; }
-.gal { display: grid; gap: 24px; padding-block: 48px;  /* room inside the mask for the edges that tilt towards you */
+.gal { display: grid; gap: 16px;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
-.gal-row { overflow: hidden; transform-origin: 50% 50%; }
-.gal-row:first-child { transform: perspective(600px) rotateX(-22deg); }
-.gal-row:last-child  { transform: perspective(600px) rotateX(22deg); }
+.gal-row { overflow: hidden; }
 .gal-track { display: flex; width: max-content; animation: pv-drift 150s linear infinite; }
 .gal-row:nth-child(2) .gal-track { animation-direction: reverse; }
 .gal-img { flex: none; width: 280px; height: 280px; margin-right: 16px; border-radius: var(--radius-card); background: hsl(var(--card)) center / cover; }
-.gal-row:nth-child(2) .gal-img { width: 220px; height: 220px; }
 @media (prefers-reduced-motion: reduce) { .gal-track { animation: none; transform: translateX(-33.3333%); } }
 
 /* ---------- FAQ: light band ---------- */
@@ -556,7 +552,6 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 }
 @media (max-width: 640px) {
   .gal-img { width: 180px; height: 180px; }
-  .gal-row:nth-child(2) .gal-img { width: 140px; height: 140px; }
 }
 
 /* ---------- Calculator critters ----------
