@@ -329,7 +329,7 @@
   const table = $('#table');
   const cell = v => v === true ? `<td class="yes">${I.check}</td>` : v === null ? `<td class="no">—</td>` : `<td>${v}</td>`;
   table.innerHTML = `
-    <thead><tr><th scope="col"><span class="th-label">Plans</span></th>${tablePlans.map((p, i) => `
+    <thead><tr><th scope="col"><span class="sr-only">Plans</span></th>${tablePlans.map((p, i) => `
       <th scope="col" data-col="${i + 1}" class="${p.featured ? 'featured-col' : ''}">${p.name}<small data-price="${p.id}">$${p.monthly} / ${p.perShort}</small>
         <a class="btn ${p.featured ? 'btn-brand' : 'btn-secondary'} th-cta" href="${p.href}">Choose ${p.name}</a></th>`).join('')}
     </tr></thead>
