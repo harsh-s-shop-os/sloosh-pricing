@@ -9,6 +9,33 @@
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const fmt = n => n.toLocaleString('en-US');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const EASE_OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
+
+  /* Number swap: the old value slides out and fades with a light blur while the
+     new one slides in, in the direction of the change (up = value went up).
+     Interruptible: a swap mid-flight drops the leaving copy and starts from the
+     value on screen. Both copies share one grid cell, so nothing reflows. */
+  function swapText(el, text, dir = 1, dur = 200) {
+    const cur = el.querySelector('[data-cur]');
+    if (!cur) { el.innerHTML = `<span data-cur>${text}</span>`; return; }
+    if (cur.textContent === String(text)) return;
+    el.querySelectorAll('[data-out]').forEach(n => n.remove());
+    if (reduce) { cur.textContent = text; return; }
+    const next = document.createElement('span');
+    next.dataset.cur = ''; next.textContent = text;
+    cur.removeAttribute('data-cur'); cur.dataset.out = ''; cur.setAttribute('aria-hidden', 'true');
+    el.appendChild(next);
+    const d = 8 * dir, opts = { duration: dur, easing: EASE_OUT, fill: 'both' };
+    cur.animate([{ opacity: 1, transform: 'none', filter: 'blur(0)' },
+                 { opacity: 0, transform: `translateY(${-d}px)`, filter: 'blur(2px)' }], opts)
+       .finished.then(() => cur.remove(), () => {});
+    next.animate([{ opacity: 0, transform: `translateY(${d}px)`, filter: 'blur(2px)' },
+                  { opacity: 1, transform: 'none', filter: 'blur(0)' }], opts);
+  }
+
+  /* Count-up for the calculator total. One loop per element: a new call
+     cancels the running one, so quick changes can't fight over the number. */
+  const tweenFrames = new WeakMap();
   const ASSET = (window.PRICING_ASSETS || {});
   const asset = p => ASSET[p] || `public/${p}`;
 
@@ -69,7 +96,7 @@
           </div>
           <div class="stepper">
             <button type="button" class="stepper-btn" data-step="-1" aria-label="Decrease seats">${I.minus}</button>
-            <span class="stepper-val" data-seat-count>${p.seats.default}</span>
+            <span class="stepper-val" data-seat-count aria-live="polite"><span data-cur>${p.seats.default}</span></span>
             <button type="button" class="stepper-btn" data-step="1" aria-label="Increase seats">${I.plus}</button>
           </div>
         </div>`;
@@ -80,7 +107,7 @@
         <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Popular</span>' : ''}</div>
         <p class="plan-for">${p.for}</p>
         <p class="price">
-          <span class="price-amt" data-amt>$${p.monthly}</span>
+          <span class="price-amt" data-amt><span data-cur>$${p.monthly}</span></span>
           <span class="price-per" data-per>${p.per}</span>
         </p>
         <p class="billed" data-billed aria-live="polite"></p>${seatRowHTML(p)}
@@ -102,14 +129,14 @@
     const min = +row.dataset.min, max = +row.dataset.max;
     const valEl = $('[data-seat-count]', row), noteEl = $('[data-seat-note]', row);
     const minusBtn = $('.stepper-btn[data-step="-1"]', row), plusBtn = $('.stepper-btn[data-step="1"]', row);
-    let n = +valEl.textContent;
-    const paint = () => {
-      valEl.textContent = n;
+    let n = +$('[data-cur]', valEl).textContent;
+    const paint = (dir = 1) => {
+      swapText(valEl, n, dir, 160);
       noteEl.textContent = max <= 1 ? 'Need a team? Pick Pro.' : n <= 1 ? 'Just you.' : `You + ${n - 1} teammate${n - 1 > 1 ? 's' : ''}`;
       minusBtn.disabled = n <= min; plusBtn.disabled = n >= max;
     };
-    minusBtn.addEventListener('click', () => { if (n > min) { n--; paint(); } });
-    plusBtn.addEventListener('click', () => { if (n < max) { n++; paint(); } });
+    minusBtn.addEventListener('click', () => { if (n > min) { n--; paint(-1); } });
+    plusBtn.addEventListener('click', () => { if (n < max) { n++; paint(1); } });
     paint();
   });
 
@@ -134,30 +161,47 @@
     <a class="btn btn-md btn-secondary" href="${ENTERPRISE.href}" target="_blank" rel="noopener">${ENTERPRISE.cta} ${I.arrow}</a>`;
 
   /* ---------- Segmented controls ---------- */
+  /* Segmented control with a highlight that slides to the chosen option.
+     It takes its first position without animating (data-ready is set after
+     the first paint), and re-measures on resize. */
   function segmented(el, onChange) {
     const btns = $$('button', el);
+    const pill = document.createElement('span');
+    pill.className = 'seg-pill'; pill.setAttribute('aria-hidden', 'true');
+    el.prepend(pill);
+    const place = () => {
+      const b = btns.find(x => x.getAttribute('aria-pressed') === 'true') || btns[0];
+      pill.style.width = b.offsetWidth + 'px';
+      pill.style.transform = `translateX(${b.offsetLeft}px)`;
+    };
     btns.forEach(b => b.addEventListener('click', () => {
       if (b.getAttribute('aria-pressed') === 'true') return;
       btns.forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-      el.dataset.value = b.dataset.v; onChange(b.dataset.v);
+      el.dataset.value = b.dataset.v; place(); onChange(b.dataset.v);
     }));
+    place();
+    addEventListener('resize', place);
+    if (document.fonts) document.fonts.ready.then(place);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.setAttribute('data-ready', '')));
   }
 
   /* ---------- Billing cycle ---------- */
   let cycle = 'monthly';
   function tween(el, from, to, prefix = '') {
+    cancelAnimationFrame(tweenFrames.get(el));
     if (reduce || from === to) { el.textContent = prefix + fmt(to); return; }
     const t0 = performance.now(), d = 420;
-    const f = t => { const k = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - k, 3);
-      el.textContent = prefix + fmt(Math.round(from + (to - from) * e)); if (k < 1) requestAnimationFrame(f); };
-    requestAnimationFrame(f);
+    const f = () => { const k = Math.min(1, Math.max(0, (performance.now() - t0) / d)), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = prefix + fmt(Math.round(from + (to - from) * e));
+      if (k < 1) tweenFrames.set(el, requestAnimationFrame(f)); };
+    tweenFrames.set(el, requestAnimationFrame(f));
   }
   function renderCycle() {
     PLANS.forEach(p => {
       const card = $(`[data-plan="${p.id}"]`, plansEl);
       const amt = $('[data-amt]', card), billed = $('[data-billed]', card);
-      const from = +amt.textContent.replace(/\D/g, ''), to = p[cycle];
-      tween(amt, from, to, '$');
+      const from = +$('[data-cur]', amt).textContent.replace(/\D/g, ''), to = p[cycle];
+      swapText(amt, '$' + to, to < from ? -1 : 1);
       billed.innerHTML = cycle === 'annual'
         ? `$${fmt(p.annual * 12)} billed yearly · <b>save $${fmt((p.monthly - p.annual) * 12)}</b>`
         : '';
@@ -227,7 +271,7 @@
     ids.forEach(k => { $('#o-' + k).textContent = v[k]; paintRange(range(k)); });
     const used = v.img * COST.img2k + v['4k'] * COST.img4k + v.vid * COST.video8;
     const pct = Math.round(used / p.credits * 100), over = used > p.credits;
-    $('#meter-fill').style.width = Math.min(100, pct) + '%';
+    $('#meter-fill').style.transform = `translateX(${Math.min(100, pct) - 100}%)`;
     $('.meter').classList.toggle('over', over);
     const l = $('#meter-l'); l.classList.toggle('over', over);
     l.innerHTML = over

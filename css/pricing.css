@@ -21,6 +21,8 @@ body {
 }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+/* No grey/blue tap flash on phones: every control has its own press state. */
+a, button, summary, input { -webkit-tap-highlight-color: transparent; }
 h1, h2, h3, p, ul { margin: 0; }
 ul { padding: 0; list-style: none; }
 :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; border-radius: var(--radius-lg); }
@@ -45,7 +47,7 @@ ul { padding: 0; list-style: none; }
 .btn-brand { background: hsl(var(--brand)); color: hsl(var(--brand-foreground)); }
 .btn-brand:hover { background: hsl(var(--yellow-400)); }
 .btn .arrow { transition: transform var(--motion-duration-enter) var(--motion-ease-out); }
-.btn:hover .arrow { transform: translateX(3px); }
+@media (hover: hover) and (pointer: fine) { .btn:hover .arrow { transform: translateX(3px); } }
 
 /* ---------- Header ---------- */
 .site-header {
@@ -89,7 +91,7 @@ ul { padding: 0; list-style: none; }
 }
 
 /* ---------- Segmented control (billing toggle, calc plan) ---------- */
-.segmented { display: inline-flex; align-items: center; gap: 2px; }
+.segmented { position: relative; display: inline-flex; align-items: center; gap: 2px; isolation: isolate; }
 .segmented button {
   height: 36px; padding: 0 16px; border-radius: var(--radius-xl);
   font-size: 16px; line-height: 24px; color: hsl(var(--muted-foreground)); white-space: nowrap;
@@ -97,7 +99,17 @@ ul { padding: 0; list-style: none; }
   transition: color var(--motion-duration-enter) var(--motion-ease-out), background-color var(--motion-duration-enter) var(--motion-ease-out);
 }
 .segmented button:hover { color: hsl(var(--foreground)); }
-.segmented button[aria-pressed="true"] { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
+.segmented button[aria-pressed="true"] { color: hsl(var(--foreground)); }
+/* Sliding highlight behind the chosen option. Width animates too: the pill is
+   absolutely positioned with nothing laid out against it, so the cost is one
+   small paint. First placement doesn't animate (data-ready comes after paint). */
+.seg-pill {
+  position: absolute; left: 0; top: 50%; height: 36px; margin-top: -18px; z-index: -1;
+  border-radius: var(--radius-xl); background: hsl(var(--muted)); pointer-events: none;
+}
+.segmented-sm .seg-pill { height: 32px; margin-top: -16px; }
+.segmented[data-ready] .seg-pill { transition: transform 250ms cubic-bezier(0.23, 1, 0.32, 1), width 250ms cubic-bezier(0.23, 1, 0.32, 1); }
+@media (prefers-reduced-motion: reduce) { .segmented[data-ready] .seg-pill { transition: none; } }
 .segmented-sm button { height: 32px; padding: 0 14px; font-size: 14px; }
 .save-chip {
   font-size: 11px; line-height: 16px; font-weight: 500; padding: 1px 6px; border-radius: 6px;
@@ -115,9 +127,9 @@ ul { padding: 0; list-style: none; }
 }
 /* Load-in: cards rise into place once, staggered left to right. */
 .plan {
-  opacity: 0; transform: translateY(28px);
-  animation: plan-in .6s var(--motion-ease-out) forwards;
-  animation-delay: calc(var(--i, 0) * 90ms);
+  opacity: 0; transform: translateY(16px);
+  animation: plan-in .5s var(--motion-ease-out) forwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
 }
 @keyframes plan-in { to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
@@ -138,12 +150,17 @@ ul { padding: 0; list-style: none; }
 .plan-for { margin-top: -12px; font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: pretty; }
 /* Amount and label are different sizes, so align on the text baseline, not box centres. */
 .price { display: flex; align-items: baseline; gap: 8px; min-height: 44px; }
-.price-amt { font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.price-amt { display: inline-grid; font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .price-per { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); }
 .billed { margin-top: -12px; font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
 .billed b { font-weight: 500; color: hsl(var(--brand)); }
 /* Only annual billing has this line; on monthly it takes no space, so the card height adjusts. */
 .billed:empty { display: none; }
+.price-amt > span, .stepper-val > span { grid-area: 1 / 1; }
+/* The yearly line fades in when it appears (it leaves instantly on monthly). */
+.billed { transition: opacity 180ms var(--motion-ease-out), transform 180ms var(--motion-ease-out); }
+@starting-style { .billed { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .billed { transition: opacity 180ms var(--motion-ease-out); } @starting-style { .billed { transform: none; } } }
 
 .credits-line { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; color: hsl(var(--foreground-subtle)); }
 .credits-line strong { font-weight: 500; color: hsl(var(--foreground)); font-variant-numeric: tabular-nums; }
@@ -158,11 +175,12 @@ ul { padding: 0; list-style: none; }
 .seat-row .label { margin-bottom: 2px; font-size: 14px; line-height: 20px; color: hsl(var(--foreground-subtle)); }
 .seat-note { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); text-wrap: pretty; }
 .stepper { display: flex; align-items: center; gap: 16px; height: 40px; padding: 0 10px; border-radius: var(--radius-xl); background: hsl(var(--muted)); flex: none; }
-.stepper-btn { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: hsl(var(--foreground)); transition: background-color var(--motion-duration-enter) var(--motion-ease-out); }
+.stepper-btn { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: hsl(var(--foreground)); transition: background-color var(--motion-duration-enter) var(--motion-ease-out), transform 150ms var(--motion-ease-out); }
+.stepper-btn:active:not(:disabled) { transform: scale(0.97); }
 .stepper-btn:hover:not(:disabled) { background: hsl(var(--border-strong)); }
 .stepper-btn:disabled { color: hsl(var(--muted-foreground)); opacity: .45; cursor: not-allowed; }
 .stepper-btn svg { width: 16px; height: 16px; }
-.stepper-val { min-width: 14px; text-align: center; font-size: 16px; line-height: 1; font-variant-numeric: tabular-nums; }
+.stepper-val { display: inline-grid; justify-items: center; min-width: 14px; text-align: center; font-size: 16px; line-height: 1; font-variant-numeric: tabular-nums; }
 
 .plan-cta { width: 100%; }
 
@@ -208,9 +226,12 @@ ul { padding: 0; list-style: none; }
   transform: translateY(calc(100cqh + var(--rise)));
   transition: none;
 }
-.plan:hover .stripes, .plan:focus-within .stripes {
+.plan:has(:focus-visible) .stripes {
   transform: translateY(calc(var(--rise) * -1));
   transition: transform 240ms linear;
+}
+@media (hover: hover) and (pointer: fine) {
+  .plan:hover .stripes { transform: translateY(calc(var(--rise) * -1)); transition: transform 240ms linear; }
 }
 .stripe {
   position: absolute; left: 0; top: 0; width: var(--len);
@@ -219,12 +240,16 @@ ul { padding: 0; list-style: none; }
 }
 .stripe-thick { height: 60px; }
 .stripe-thin  { height: 30px; margin: 52px 0 0 30px; }  /* 60px along the normal: (sin30, cos30) x 60 */
-.critter { position: absolute; bottom: 0; transform: translateY(110%); transition: transform var(--motion-duration-enter) var(--motion-ease-out); }
-.plan:hover .critter, .plan:focus-within .critter { transform: translateY(0); }
-.plan:hover .critter:nth-child(4) { transition-delay: .03s; }
-.plan:hover .critter:nth-child(5) { transition-delay: .06s; }
-.plan:hover .critter:nth-child(6) { transition-delay: .09s; }
-.plan:hover .critter:nth-child(7) { transition-delay: .12s; }
+/* Rise 180ms (enter), drop 120ms (exit): leaving should be quicker than arriving. */
+.critter { position: absolute; bottom: 0; transform: translateY(110%); transition: transform var(--motion-duration-exit) var(--motion-ease-out); }
+.plan:has(:focus-visible) .critter { transform: translateY(0); transition-duration: var(--motion-duration-enter); }
+@media (hover: hover) and (pointer: fine) {
+  .plan:hover .critter { transform: translateY(0); transition-duration: var(--motion-duration-enter); }
+  .plan:hover .critter:nth-child(4) { transition-delay: .03s; }
+  .plan:hover .critter:nth-child(5) { transition-delay: .06s; }
+  .plan:hover .critter:nth-child(6) { transition-delay: .09s; }
+  .plan:hover .critter:nth-child(7) { transition-delay: .12s; }
+}
 .critter img { position: absolute; max-width: none; display: block; }
 .critter.flip > img:first-child { transform: scaleX(-1); }
 @media (prefers-reduced-motion: reduce) {
@@ -288,11 +313,12 @@ input[type="range"]::-webkit-slider-thumb {
   transition: transform var(--motion-duration-enter) var(--motion-ease-out);
 }
 input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: hsl(var(--foreground)); border: 3px solid hsl(var(--card)); }
-input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.12); }
+@media (hover: hover) and (pointer: fine) { input[type="range"]:hover::-webkit-slider-thumb { transform: scale(1.05); } }
 input[type="range"]:disabled { cursor: not-allowed; opacity: .4; }
 
 .meter { position: relative; height: 10px; border-radius: 999px; background: hsl(var(--muted)); overflow: hidden; margin-top: 4px; }
-.meter-fill { position: absolute; inset: 0 auto 0 0; width: 0; border-radius: inherit; background: hsl(var(--brand)); transition: width .32s var(--motion-ease-out), background-color .2s; }
+.meter-fill { position: absolute; inset: 0; border-radius: inherit; background: hsl(var(--brand)); transform: translateX(-100%); transition: transform .32s var(--motion-ease-out), background-color .2s; }
+@media (prefers-reduced-motion: reduce) { .meter-fill { transition: background-color .2s; } }
 .meter.over .meter-fill { background: hsl(var(--destructive-foreground)); }
 .meter-l { margin-top: -12px; font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; text-wrap: pretty; }
 .meter-l b { color: hsl(var(--foreground)); font-weight: 500; }
@@ -365,11 +391,13 @@ details p { padding: 0 40px 20px 0; font-size: 14px; line-height: 22px; color: h
 .closing p { color: hsl(var(--muted-foreground)); margin-bottom: 12px; text-wrap: pretty; }
 .closing-critters { position: absolute; left: 50%; bottom: 0; width: 346px; height: 76px; transform: translateX(-50%); z-index: -1; }
 .closing-critters .critter { transform: translateY(0); }
-.closing:hover .closing-critters .critter { animation: hop .5s var(--motion-ease-out); }
-.closing:hover .closing-critters .critter:nth-child(2) { animation-delay: .05s; }
-.closing:hover .closing-critters .critter:nth-child(3) { animation-delay: .1s; }
-.closing:hover .closing-critters .critter:nth-child(4) { animation-delay: .15s; }
-.closing:hover .closing-critters .critter:nth-child(5) { animation-delay: .2s; }
+@media (hover: hover) and (pointer: fine) {
+  .closing:hover .closing-critters .critter { animation: hop .5s var(--motion-ease-out); }
+  .closing:hover .closing-critters .critter:nth-child(2) { animation-delay: .05s; }
+  .closing:hover .closing-critters .critter:nth-child(3) { animation-delay: .1s; }
+  .closing:hover .closing-critters .critter:nth-child(4) { animation-delay: .15s; }
+  .closing:hover .closing-critters .critter:nth-child(5) { animation-delay: .2s; }
+}
 @keyframes hop { 40% { transform: translateY(-10px); } }
 @media (prefers-reduced-motion: reduce) { .closing:hover .closing-critters .critter { animation: none; } }
 
