@@ -63,7 +63,7 @@ const PLANS = [
       '6 concurrent runs',
       'Unused credits roll over 3 months',
     ],
-    seats: { min: 1, max: 10, default: 3 },
+    seats: { min: 1, max: 10, default: 1 },
     critters: 'pro',
   },
   {
@@ -84,7 +84,7 @@ const PLANS = [
       '12 concurrent runs',
       '2x the credits of Pro per seat',
     ],
-    seats: { min: 1, max: 10, default: 3 },
+    seats: { min: 1, max: 10, default: 1 },
     critters: 'max',
   },
 ];

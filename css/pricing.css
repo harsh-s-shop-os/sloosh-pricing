@@ -152,6 +152,7 @@ ul { padding: 0; list-style: none; }
 .price { display: flex; align-items: baseline; gap: 8px; min-height: 44px; }
 .price-amt { display: inline-grid; font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .price-per { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); }
+.price-per .nw { white-space: nowrap; }
 .billed { margin-top: -12px; font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
 .billed b { font-weight: 500; color: hsl(var(--brand)); }
 /* Only annual billing has this line; on monthly it takes no space, so the card height adjusts. */

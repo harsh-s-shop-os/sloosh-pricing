@@ -36,6 +36,26 @@
   /* Count-up for the calculator total. One loop per element: a new call
      cancels the running one, so quick changes can't fight over the number. */
   const tweenFrames = new WeakMap();
+
+  /* Pricing state: billing cycle + seats per plan. Seat plans are priced per
+     seat, so the card shows the total for the chosen seats (same maths as
+     dev.sloosh.ai/pricing): monthly = price x seats; annual = annual price x
+     seats, billed x12. One seat keeps the "per seat per month" label. */
+  let cycle = 'monthly';
+  const seatsBy = Object.fromEntries(PLANS.map(p => [p.id, p.seats ? p.seats.default : 1]));
+  function renderPrice(p) {
+    const card = document.querySelector(`[data-plan="${p.id}"]`);
+    if (!card) return;
+    const n = seatsBy[p.id] || 1, unit = p[cycle], total = unit * n;
+    const amt = card.querySelector('[data-amt]');
+    const from = +amt.querySelector('[data-cur]').textContent.replace(/\D/g, '');
+    swapText(amt, '$' + fmt(total), total < from ? -1 : 1);
+    // Two unbreakable chunks, so a narrow card wraps between them, never mid-phrase.
+    card.querySelector('[data-per]').innerHTML = n > 1 ? `<span class="nw">per month</span> <span class="nw">· ${n} seats</span>` : p.per;
+    card.querySelector('[data-billed]').innerHTML = cycle === 'annual'
+      ? `$${fmt(p.annual * 12 * n)} billed yearly · <b>save $${fmt((p.monthly - p.annual) * 12 * n)}</b>`
+      : '';
+  }
   const ASSET = (window.PRICING_ASSETS || {});
   const asset = p => ASSET[p] || `public/${p}`;
 
@@ -127,11 +147,13 @@
   // Seat steppers: one per paid plan, clamped to that plan's own range
   $$('.seat-row', plansEl).forEach(row => {
     const min = +row.dataset.min, max = +row.dataset.max;
+    const plan = PLANS.find(x => x.id === row.closest('[data-plan]').dataset.plan);
     const valEl = $('[data-seat-count]', row), noteEl = $('[data-seat-note]', row);
     const minusBtn = $('.stepper-btn[data-step="-1"]', row), plusBtn = $('.stepper-btn[data-step="1"]', row);
     let n = +$('[data-cur]', valEl).textContent;
     const paint = (dir = 1) => {
       swapText(valEl, n, dir, 160);
+      seatsBy[plan.id] = n; renderPrice(plan);
       noteEl.textContent = max <= 1 ? 'Need a team? Pick Pro.' : n <= 1 ? 'Just you.' : `You + ${n - 1} teammate${n - 1 > 1 ? 's' : ''}`;
       minusBtn.disabled = n <= min; plusBtn.disabled = n >= max;
     };
@@ -186,7 +208,6 @@
   }
 
   /* ---------- Billing cycle ---------- */
-  let cycle = 'monthly';
   function tween(el, from, to, prefix = '') {
     cancelAnimationFrame(tweenFrames.get(el));
     if (reduce || from === to) { el.textContent = prefix + fmt(to); return; }
@@ -198,13 +219,7 @@
   }
   function renderCycle() {
     PLANS.forEach(p => {
-      const card = $(`[data-plan="${p.id}"]`, plansEl);
-      const amt = $('[data-amt]', card), billed = $('[data-billed]', card);
-      const from = +$('[data-cur]', amt).textContent.replace(/\D/g, ''), to = p[cycle];
-      swapText(amt, '$' + to, to < from ? -1 : 1);
-      billed.innerHTML = cycle === 'annual'
-        ? `$${fmt(p.annual * 12)} billed yearly · <b>save $${fmt((p.monthly - p.annual) * 12)}</b>`
-        : '';
+      renderPrice(p);
       const th = $(`[data-price="${p.id}"]`);
       if (th) th.textContent = `$${p[cycle]} / ${p.perShort}${cycle === 'annual' ? ', billed yearly' : ''}`;
     });
