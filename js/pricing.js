@@ -144,8 +144,8 @@
           </div>
         </div>`;
   /* ---------- Plan visual ----------
-     Rows of gradient "images" drifting left to right at the top of each card:
-     1 row on Creator, 2 on Pro, 4 on Max. Rows stack up from the bottom of a
+     Rows of images drifting left to right at the top of each card:
+     2 rows on Creator, 4 on Pro, 6 on Max (PLANS[].rows). Rows stack up from the bottom of a
      fixed-height strip and fade out towards the card's top edge, so extra rows
      peek in from the top. Hovering a card speeds its rows up. */
   const TILE_GRADS = [
@@ -154,15 +154,21 @@
   ];
   const TILE_ANGLES = [135, 160, 200, 120, 45, 90, 225];
   const tileGrad = k => { const [a, b] = TILE_GRADS[(k * 7) % TILE_GRADS.length]; return `linear-gradient(${TILE_ANGLES[(k * 3) % TILE_ANGLES.length]}deg, hsl(var(${a})), hsl(var(${b})))`; };
-  // 3D renders from lummi.ai/3d (free tier only; Lummi Pro images skipped). Pulled at 480px square, q72 jpg,
-  // saved under public/pricing/ as plan-lummi-NN.jpg. The old Unsplash set is parked in public/pricing-unsplash-old/.
-  const TILE_PHOTOS = Array.from({ length: 17 }, (_, i) => `lummi-${String(i + 1).padStart(2, '0')}`);
-  const tileImg = k => {
-    const id = TILE_PHOTOS[k % TILE_PHOTOS.length];
+  // 160 free 3D renders from lummi.ai (3D page, creator pages and 3D searches; Lummi Pro images skipped), 480px
+  // square q72 jpg, saved as public/pricing/plan-lummi-001…160.jpg.
+  const TILE_PHOTOS = Array.from({ length: 160 }, (_, i) => `lummi-${String(i + 1).padStart(3, '0')}`);
+  // One shuffled deck per page load, dealt out card by card, row by row: no image appears twice on a card or on
+  // two cards at once (the three cards need ~152 tiles between them; see perRow below).
+  const DECK = TILE_PHOTOS.slice();
+  for (let i = DECK.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [DECK[i], DECK[j]] = [DECK[j], DECK[i]]; }
+  let dealt = 0;
+  const draw = () => DECK[dealt++ % DECK.length];
+  const tileImg = (id, k) =>
     // gradient first so it's what renders instantly; the local photo layers on top once it loads.
-    return `background-image:url('${asset(`pricing/plan-${id}.jpg`)}'),${tileGrad(k)}`;
-  };
-  const ROW_SIZES = [7, 9, 6, 8];   // unique images per row (5–10)
+    `background-image:url('${asset(`pricing/plan-${id}.jpg`)}'),${tileGrad(k)}`;
+  // Each row holds enough different images to span the widest card (560px when cards stack) plus the tilt's
+  // overhang, so the loop never shows the same image twice in view.
+  const MAX_CARD = 560;
   const STRIP = 220, GAP = 8, SPEED = 20;
   const TILT = 18, PERSP = 600;
   // Share of the top row hidden behind the card's top edge. Creator's single row must fill the whole strip on
@@ -170,7 +176,7 @@
   const PEEK = rows => (rows === 1 ? 0.2 : 0.35);   // per-row tilt (deg) and perspective depth (px) — mirrored in .pv-row   // strip height (px), gap (px), drift speed (px/s)
   const visualHTML = (p, planIndex) => {
     if (!p.rows) return '';
-    // Square images sized so the rows exactly fill the strip: 1 row = big, 2 = medium, 4 = small.
+    // Square images sized so the rows exactly fill the strip: 2 rows = big, 4 = medium, 6 = small.
     // Each row tilts back on its own (see .pv-row), which makes it look shorter. `slot` is the height a row
     // should look after the tilt; `size` is the real square size that tilts down to exactly that, so the rows
     // still fill the strip edge to edge: slot = size·cos·P / (P + size·sin).
@@ -179,8 +185,8 @@
     const rad = TILT * Math.PI / 180, c = Math.cos(rad), sn = Math.sin(rad);
     const size = slot * PERSP / (c * PERSP - slot * sn);
     const rows = Array.from({ length: p.rows }, (_, i) => i).map(r => {
-      const n = ROW_SIZES[(r + 4) % ROW_SIZES.length];
-      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="${tileImg(k + r * 5 + planIndex * 13)}"></span>`).join('');
+      const n = Math.ceil(MAX_CARD * 1.1 / (size + GAP)) + 1;
+      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="${tileImg(draw(), k + r * 5 + planIndex * 13)}"></span>`).join('');
       const dur = (n * (size + GAP)) / SPEED * (r % 2 ? 1.15 : 1);   // same on-screen speed at any size
       // three copies of the set so the loop never shows a gap at any card width
       return `<div class="pv-row"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
@@ -448,8 +454,9 @@
      Same pool as the cards (TILE_PHOTOS); swap for real Spacelab work before shipping. */
   const galEl = $('#gal');
   if (galEl) {
-    const half = Math.ceil(TILE_PHOTOS.length / 2);
-    const sets = [TILE_PHOTOS.slice(0, half), TILE_PHOTOS.slice(half)];
+    const GAL = TILE_PHOTOS.slice(0, 17);   // the gallery keeps its original 17 images
+    const half = Math.ceil(GAL.length / 2);
+    const sets = [GAL.slice(0, half), GAL.slice(half)];
     galEl.innerHTML = sets.map((ids, r) => {
       const set = ids.map(id => `<span class="gal-img" style="background-image:url('${asset(`pricing/plan-${id}.jpg`)}')"></span>`).join('');
       return `<div class="gal-row"><div class="gal-track" style="animation-duration:${(ids.length * 9 + r * 8)}s">${set}${set}${set}</div></div>`;
