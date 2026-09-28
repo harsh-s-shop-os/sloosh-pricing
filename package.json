@@ -1,0 +1,10 @@
+{
+  "name": "sloosh-pricing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sloosh pricing page prototype — Sloosh design system, rewritten content.",
+  "scripts": {
+    "dev": "npx --yes serve -l 4321 .",
+    "build": "node tools/build-single.mjs"
+  }
+}
