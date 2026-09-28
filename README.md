@@ -30,18 +30,16 @@ No framework, no dependencies.
 - Annual prices: 15 / 39 / 79 (in `js/config.js` → `PLANS[].annual`)
 - Credit cost per generation: every value in `COST`
 
-## Section rhythm
+## Section contrast
 
-Each section changes at least two of surface, layout, type scale and imagery, so no two neighbours look alike:
+Only the backgrounds change. Layout, cards and type sizes are the same on every section.
 
-| Section | Treatment |
+| Section | Background |
 | --- | --- |
-| Plans + Enterprise | Dark cards, moving images |
-| Credits | Full-bleed yellow band, dark calculator card sitting on it |
-| Compare | No container, centred 48px heading, table straight on the page |
-| Gallery | Full-bleed rows of big images, no text blocks |
-| FAQ | Light band, sticky heading on the left, questions on hairlines |
-| Closing | No card, poster-size type |
+| Plans, Enterprise, Compare, Closing | Dark (unchanged) |
+| Credits | Full-width yellow band; the calculator card stays dark on it |
+| Gallery | Full-width rows of images |
+| FAQ | Light band; same cards and layout |
 
 Gallery and plan-card images are Lummi 3D placeholders. Swap them for real Spacelab work before shipping.
 
@@ -57,7 +55,7 @@ Gallery and plan-card images are Lummi 3D placeholders. Swap them for real Space
 
 ## Agents only
 
-- Light and yellow sections re-map tokens inside the section (`.band-light`, `.band-brand` in `css/pricing.css`). Components need no variants; add new sections the same way.
+- Light and yellow sections re-map tokens inside the section (`.band-light`, `.band-brand` in `css/pricing.css`). Components need no variants. Do not change layout when changing a section's surface.
 
 - Tokens are HSL channel triplets: use `hsl(var(--token))` or `hsl(var(--token) / .5)`.
 - Headings are weight 400, system font stack — matches the app. Do not add a display font.

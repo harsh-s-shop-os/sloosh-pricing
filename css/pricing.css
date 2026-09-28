@@ -485,54 +485,38 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 }
 
 /* ============================================================
-   Section contrast
-   Every section used to be the same dark card with the same small
-   left-aligned heading. Each one now changes at least two of:
-   surface, layout, type scale, imagery. Surfaces are made by
-   re-mapping tokens inside a section, so every component keeps
-   working without its own light/yellow variant.
-     Plans + Enterprise  dark cards, moving images   (unchanged)
-     Credits             full-bleed yellow band, dark card sitting on it
-     Compare             no container, centred big heading, table on the page
-     Gallery             full-bleed image rows, no text blocks
-     FAQ                 light band, sticky heading left, questions on hairlines
-     Closing             no card, poster-size type
+   Section contrast — surfaces only. Layout, type sizes and
+   components are unchanged; only the background behind a section
+   changes. Surfaces work by re-mapping tokens inside the section.
+     Credits  full-bleed yellow band (calculator card stays dark on it)
+     Gallery  full-bleed rows of images
+     FAQ      light band
    ============================================================ */
 
-/* Full-bleed band: the section escapes .page to the viewport edges, then pads
-   back in so its content still sits on the page grid. */
+/* Full-bleed band: escapes .page to the viewport edges, then pads back in so
+   the content stays on the page grid. */
 .band {
   margin-inline: calc(50% - 50vw);
   padding-inline: calc(50vw - 50%);
   padding-block: 120px;
   margin-top: 120px;
 }
-.band h2, .open .block-head h2, .gallery h2 { font-weight: 400; font-size: 48px; line-height: 1.08; letter-spacing: -0.03em; }
-.band .lede, .open .lede, .gallery .lede { font-size: 16px; line-height: 24px; }
 
 /* ---------- Credits: yellow band ---------- */
 .band-brand { background: hsl(var(--brand)); color: hsl(var(--brand-foreground)); }
-.band-brand .block-head { --muted-foreground: 0 0% 18%; max-width: 720px; }
+.band-brand .block-head { --muted-foreground: 0 0% 18%; }
 .band-brand .calc-tabs { --muted: var(--neutral-950); --foreground: var(--neutral-50); --muted-foreground: 0 0% 22%; }
 .band-brand .calc-tabs .segmented button:not([aria-pressed="true"]):hover { color: hsl(var(--neutral-950)); }
-.band-brand .calc {
-  color: hsl(var(--foreground)); border-color: transparent;
-  box-shadow: 0 40px 80px -40px hsl(0 0% 0% / .55), 0 2px 0 hsl(0 0% 0% / .08);
-}
+.band-brand .calc { color: hsl(var(--foreground)); border-color: transparent; }
 .band-brand ::selection { background: hsl(var(--neutral-950)); color: hsl(var(--brand)); }
 
-/* ---------- Compare: open, centred ---------- */
-.open { --card: var(--background); }
-.open .block-head { margin-inline: auto; text-align: center; justify-items: center; max-width: 760px; margin-bottom: 56px; }
-.open .table-wrap { border: 0; border-radius: 0; border-top: 1px solid hsl(var(--border-strong)); }
-.open .compare .group th { background: none; color: hsl(var(--foreground)); font-size: 14px; padding-top: 40px; border-bottom-color: hsl(var(--border-strong)); }
-
-/* ---------- Gallery: image break ---------- */
-.gallery { margin-inline: calc(50% - 50vw); margin-top: 120px; }
-.gallery .block-head { margin: 0 auto 48px; padding: 0 20px; text-align: center; justify-items: center; max-width: 760px; }
-.gal { display: grid; gap: 16px; overflow: hidden;
+/* ---------- Gallery: image rows ----------
+   Heading uses the same .block-head styles as every other section. */
+.gallery { padding-top: 120px; }
+.gal { display: grid; gap: 16px; overflow: hidden; margin-inline: calc(50% - 50vw);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.gallery h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
 .gal-track { display: flex; width: max-content; animation: pv-drift 150s linear infinite; }
 .gal-row:nth-child(2) .gal-track { animation-direction: reverse; }
 .gal-img { flex: none; width: 280px; height: 280px; margin-right: 16px; border-radius: var(--radius-card); background: hsl(var(--card)) center / cover; }
@@ -546,33 +530,12 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
   --border: var(--neutral-200); --border-strong: var(--neutral-300); --ring: var(--neutral-600);
   background: hsl(var(--background)); color: hsl(var(--foreground)); color-scheme: light;
 }
-.band-light .faq { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; }
-.faq-side { position: sticky; top: 108px; display: grid; gap: 32px; align-content: start; }
-.faq-side .block-head { margin-bottom: 0; }
-.band-light .faq-nav { position: static; }
-.band-light details { background: none; border: 0; border-radius: 0; padding: 0; border-bottom: 1px solid hsl(var(--border)); }
-.band-light details + details { margin-top: 0; }
-.band-light .faq-group h3 { color: hsl(var(--foreground)); font-size: 14px; margin-bottom: 4px; padding-bottom: 12px; border-bottom: 1px solid hsl(var(--foreground)); }
-.band-light summary { padding: 20px 0; font-size: 17px; }
-.band-light summary { color: hsl(var(--foreground-subtle)); }
-.band-light summary:hover, .band-light details[open] summary { color: hsl(var(--foreground)); }
-
-/* ---------- Closing: poster type ---------- */
-.band + .closing { margin-top: 0; }
-.closing { background: none; border: 0; border-radius: 0; padding: 160px 24px 140px; gap: 16px; }
-.closing h2 { font-size: clamp(44px, 8vw, 104px); line-height: 1; letter-spacing: -0.045em; }
-.closing p { font-size: 18px; line-height: 28px; }
-.closing-critters { transform: translateX(-50%) scale(1.35); transform-origin: 50% 100%; }
 
 @media (max-width: 900px) {
   .band { padding-block: 88px; margin-top: 88px; }
-  .gallery { margin-top: 88px; }
-  .band-light .faq { grid-template-columns: minmax(0, 1fr); gap: 32px; }
-  .faq-side { position: static; }
+  .gallery { padding-top: 88px; }
 }
 @media (max-width: 640px) {
-  .band h2, .open .block-head h2, .gallery h2 { font-size: 34px; }
   .gal-img { width: 180px; height: 180px; }
   .gal-row:nth-child(2) .gal-img { width: 140px; height: 140px; }
-  .closing { padding: 112px 16px 120px; }
 }
