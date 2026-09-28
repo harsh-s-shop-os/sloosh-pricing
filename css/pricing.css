@@ -78,16 +78,18 @@ ul { padding: 0; list-style: none; }
 /* ---------- Hero ---------- */
 .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; text-align: left; padding: 88px 0 48px; }
 .hero-text { display: grid; gap: 8px; min-width: 0; }
-.hero h1 {
+/* Titles and subtitles use text-wrap: balance (even line lengths, no hand-set widths). */
+.hero h1 { text-wrap: balance;
   font-weight: 400; font-size: 36px; line-height: 1.2; letter-spacing: -0.02em;
   white-space: nowrap;
 }
-.hero-sub { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; max-width: 62ch; text-wrap: pretty; }
+.hero-sub { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: balance; }
 .hero .segmented { flex: none; }
 @media (max-width: 640px) {
   .hero { flex-direction: column; align-items: flex-start; gap: 28px; }
   /* Wrap instead of shrinking, so the title never drops below the 24px section headings. */
-  .hero h1 { font-size: 30px; white-space: normal; text-wrap: balance; }
+  /* Titles and subtitles use text-wrap: balance (even line lengths, no hand-set widths). */
+.hero h1 { text-wrap: balance; font-size: 30px; white-space: normal; text-wrap: balance; }
 }
 
 /* ---------- Segmented control (billing toggle, calc plan) ---------- */
@@ -148,13 +150,13 @@ ul { padding: 0; list-style: none; }
 .seat-spacer { height: 40px; }
 @media (max-width: 900px) { .seat-spacer { display: none; } }  /* cards stack on mobile: nothing to align */
 .plan-title { display: flex; align-items: center; gap: 10px; }
-.plan-title h2 { font-size: 20px; line-height: 30px; font-weight: 400; }
+.plan-title h2 { font-size: 20px; line-height: 30px; font-weight: 400; text-wrap: balance; }
 .badge {
   font-size: 12px; line-height: 18px; font-weight: 500;
   padding: 2px 8px; border-radius: 999px;
   background: hsl(var(--brand)); color: hsl(var(--brand-foreground));
 }
-.plan-for { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: pretty; }
+.plan-for { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: balance; }
 /* Amount and label are different sizes, so align on the text baseline, not box centres. */
 .price { display: flex; align-items: baseline; gap: 8px; min-height: 44px; }
 .price-amt { display: inline-grid; font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
@@ -279,7 +281,7 @@ ul { padding: 0; list-style: none; }
 .block-head { display: grid; gap: 8px; max-width: 640px; margin-bottom: 40px; }
 .eyebrow { font-size: 12px; line-height: 18px; color: hsl(var(--brand)); }
 .block h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
-.lede { max-width: 512px; color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: pretty; }
+.lede { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: balance; }
 .label { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); }
 
 /* ---------- Calculator ---------- */
@@ -409,8 +411,8 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
   padding: 72px 24px 120px; border-radius: var(--radius-card); background: hsl(var(--card)); border: 1px solid hsl(var(--border));
   overflow: hidden; isolation: isolate;
 }
-.closing h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; }
-.closing p { color: hsl(var(--muted-foreground)); margin-bottom: 12px; text-wrap: pretty; }
+.closing h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
+.closing p { color: hsl(var(--muted-foreground)); margin-bottom: 12px; text-wrap: balance; }
 .closing-critters { position: absolute; left: 50%; bottom: 0; width: 346px; height: 76px; transform: translateX(-50%); z-index: -1; }
 .closing-critters .critter { transform: translateY(0); }
 @media (hover: hover) and (pointer: fine) {
