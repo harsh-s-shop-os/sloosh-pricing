@@ -504,7 +504,7 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
    changes. Surfaces work by re-mapping tokens inside the section.
      Credits  full-bleed yellow band (calculator card stays dark on it)
      Gallery  full-bleed rows of images
-     FAQ      light band
+     FAQ      same dark background as the page (light band retired)
    ============================================================ */
 
 /* Full-bleed band: escapes .page to the viewport edges, then pads back in so
@@ -525,16 +525,17 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 .band-brand ::selection { background: hsl(var(--neutral-950)); color: hsl(var(--brand)); }
 
 /* ---------- Gallery: image rows ----------
-   Heading uses the same .block-head styles as every other section. */
-/* No heading: the section is just the two rows. The section is full-bleed and clips, so the top row
-   is cut by its top edge and the bottom row by its bottom edge (flush against the FAQ band): they peek in. */
-.gallery { margin-top: 120px; margin-inline: calc(50% - 50vw); overflow: hidden; }
-.gallery + .band { margin-top: 0; }
-.gal-row:first-child { margin-top: -100px; }   /* 280px tiles, 180px visible */
-.gal-row:last-child { margin-bottom: -80px; }  /* 220px tiles, 140px visible */
-.gal { display: grid; gap: 16px; overflow: hidden;
+   No heading, same background as the sections around it. Two rows drift in opposite directions,
+   uncropped. Each row tilts the opposite way to the other: the top row's top edge leans towards you,
+   the bottom row's bottom edge does. Stronger than the plan cards (22deg vs 18deg, same 600px). */
+.gallery { margin-top: 120px; margin-inline: calc(50% - 50vw); overflow-x: clip; }
+.gallery + .band { margin-top: 0; padding-top: 80px; }
+.gal { display: grid; gap: 24px; padding-block: 48px;  /* room inside the mask for the edges that tilt towards you */
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.gal-row { overflow: hidden; transform-origin: 50% 50%; }
+.gal-row:first-child { transform: perspective(600px) rotateX(-22deg); }
+.gal-row:last-child  { transform: perspective(600px) rotateX(22deg); }
 .gal-track { display: flex; width: max-content; animation: pv-drift 150s linear infinite; }
 .gal-row:nth-child(2) .gal-track { animation-direction: reverse; }
 .gal-img { flex: none; width: 280px; height: 280px; margin-right: 16px; border-radius: var(--radius-card); background: hsl(var(--card)) center / cover; }
@@ -556,8 +557,6 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 @media (max-width: 640px) {
   .gal-img { width: 180px; height: 180px; }
   .gal-row:nth-child(2) .gal-img { width: 140px; height: 140px; }
-  .gal-row:first-child { margin-top: -64px; }
-  .gal-row:last-child { margin-bottom: -50px; }
 }
 
 /* ---------- Calculator critters ----------
