@@ -271,6 +271,7 @@ ul { padding: 0; list-style: none; }
 .ent-info { display: flex; flex-direction: column; gap: 32px; }
 .ent-info .price-amt { white-space: nowrap; }
 .ent-list { display: flex; flex-direction: column; gap: 20px; }
+.ent-cta { align-self: end; }  /* button sits on the card's bottom line, level with the last check and the price */
 
 /* ---------- Section blocks ---------- */
 .block { padding-top: 120px; }
