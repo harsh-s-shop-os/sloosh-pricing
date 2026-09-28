@@ -93,6 +93,7 @@ const ENTERPRISE = {
   eyebrow: 'Enterprise',
   title: 'Custom pricing',
   body: 'For brands with 11 or more people making content.',
+  itemsEyebrow: 'Everything in Max, and:',
   items: ['11 or more seats', 'Custom credits', 'Single sign-on', 'Invoicing'],
   cta: 'Talk to us',
   href: 'https://shopos.ai/contact-sales',
