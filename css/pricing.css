@@ -179,6 +179,9 @@ ul { padding: 0; list-style: none; }
 /* Amount and label are different sizes, so align on the text baseline, not box centres. */
 .price { display: flex; align-items: last baseline; gap: 8px; min-height: 44px; }  /* last baseline: a two-line per-label sits its bottom line on the price */
 .price-amt { display: inline-grid; font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+/* Annual: the monthly price struck through, same size as the price, in muted grey. */
+.price-was { font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
+  color: hsl(var(--muted-foreground)); text-decoration: line-through; text-decoration-thickness: 2px; }
 .price-per { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); }
 .price-per .nw { display: block; white-space: nowrap; }
 .billed { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }

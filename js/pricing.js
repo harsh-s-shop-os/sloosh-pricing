@@ -43,7 +43,7 @@
      seat, so the card shows the total for the chosen seats (same maths as
      dev.sloosh.ai/pricing): monthly = price x seats; annual = annual price x
      seats, billed x12. One seat keeps the "per seat per month" label. */
-  let cycle = 'monthly';
+  let cycle = 'annual';   // annual is the default; the toggle in index.html starts on Annually too
   const seatsBy = Object.fromEntries(PLANS.map(p => [p.id, p.seats ? p.seats.default : 1]));
   function renderPrice(p) {
     const card = document.querySelector(`[data-plan="${p.id}"]`);
@@ -52,6 +52,10 @@
     const amt = card.querySelector('[data-amt]');
     const from = +amt.querySelector('[data-cur]').textContent.replace(/\D/g, '');
     swapText(amt, '$' + fmt(total), total < from ? -1 : 1);
+    // Annual: the monthly price, struck through, sits before the discounted one.
+    const was = card.querySelector('[data-was]');
+    was.hidden = cycle !== 'annual';
+    was.querySelector('[data-was-amt]').textContent = '$' + fmt(p.monthly * n);
     // Two stacked lines; the last one sits on the price's baseline (.price uses last-baseline alignment).
     card.querySelector('[data-per]').innerHTML = n > 1 ? `<span class="nw">per month</span> <span class="nw">for ${n} seats</span>` : perLines(p.per);
     card.querySelector('[data-billed]').innerHTML = cycle === 'annual'
@@ -193,7 +197,8 @@
         </div>
         <div class="plan-pricing">
           <p class="price">
-            <span class="price-amt" data-amt><span data-cur>$${p.monthly}</span></span>
+            <s class="price-was" data-was${cycle === 'annual' ? '' : ' hidden'}><span class="sr-only">Was </span><span data-was-amt>$${p.monthly}</span></s>
+            <span class="price-amt" data-amt><span data-cur>$${p[cycle]}</span></span>
             <span class="price-per" data-per>${perLines(p.per)}</span>
           </p>
           <p class="billed" data-billed aria-live="polite"></p>
