@@ -299,7 +299,7 @@ ul { padding: 0; list-style: none; }
 /* Section heads mirror the first fold: a title with its subtitle 8px below, no eyebrow tag. */
 .block-head { display: grid; gap: 8px; max-width: 640px; margin-bottom: 40px; }
 .eyebrow { font-size: 12px; line-height: 18px; color: hsl(var(--brand)); }
-.block h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
+.block h2 { font-size: 36px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
 .lede { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: balance; }
 .label { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); }
 
@@ -431,7 +431,7 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
   padding: 72px 24px 120px; border-radius: var(--radius-card); background: hsl(var(--card)); border: 1px solid hsl(var(--border));
   overflow: hidden; isolation: isolate;
 }
-.closing h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
+.closing h2 { font-size: 36px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
 .closing p { color: hsl(var(--muted-foreground)); margin-bottom: 12px; text-wrap: balance; }
 .closing-critters { position: absolute; left: 50%; bottom: 0; width: 346px; height: 76px; transform: translateX(-50%); z-index: -1; }
 .closing-critters .critter { transform: translateY(0); }
@@ -516,7 +516,7 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 .gal { display: grid; gap: 16px; overflow: hidden; margin-inline: calc(50% - 50vw);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
           mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
-.gallery h2 { font-size: 24px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
+.gallery h2 { font-size: 36px; line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
 .gal-track { display: flex; width: max-content; animation: pv-drift 150s linear infinite; }
 .gal-row:nth-child(2) .gal-track { animation-direction: reverse; }
 .gal-img { flex: none; width: 280px; height: 280px; margin-right: 16px; border-radius: var(--radius-card); background: hsl(var(--card)) center / cover; }
@@ -559,3 +559,6 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
 .calc-peek .critter-group[data-on] .critter:nth-child(5) { transition-delay: 240ms; }
 @media (prefers-reduced-motion: reduce) { .calc-peek .critter, .calc-peek .critter-group[data-on] .critter { transition: none; } }
 @media (max-width: 640px) { .calc-peek { display: none; } }   /* the plan tabs fill that row on phones */
+
+/* Section titles match the page title (.hero h1): 36px, 30px on phones. */
+@media (max-width: 640px) { .block h2, .closing h2, .gallery h2 { font-size: 30px; } }
