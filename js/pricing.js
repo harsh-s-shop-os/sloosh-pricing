@@ -99,13 +99,19 @@
      are the dev page's spacing, shifted so the group starts at 0. */
   const group = (w, html, plan) => `<div class="critter-group" data-plan="${plan}" style="width:${w}px">${html}</div>`;
   // Grey (#525252) set for the credits calculator: the chosen plan's animals peek over the card's top edge.
-  // K pulls the animals closer together (1 = the spacing from the live page). LAST = left offset of each group's
-  // last animal, so the group width shrinks by exactly the space removed.
-  const K = 0.82, LAST = { creator: 81.27, pro: 216, max: 273.86 };
+  // Calculator set: animals laid out edge to edge with a fixed PEEK_GAP between their boxes, so they sit close without
+  // touching (the live page's spacing is ~9px; PEEK_GAP tightens it). [name, width, bottom offset] per animal.
+  const PEEK_GAP = 3;
+  const W = { mouse: 67.71, cat: 72, parrot: 49.62, chicken: 48.9, dog: 72.67 };
+  const row = (plan, list) => {
+    let x = 0;
+    const html = list.map(([n, b]) => { const h = C[n](x, b, 1); x += W[n] + PEEK_GAP; return h; }).join('');
+    return group(x - PEEK_GAP, html, plan);
+  };
   const CRITTERS = {
-    creator: group(130.89 - (1 - K) * LAST.creator, C.cat(K * 0, 0, 1) + C.parrot(K * 81.27, 0, 1), 'creator'),
-    pro: group(264.9 - (1 - K) * LAST.pro, C.mouse(K * 0, 1, 1) + C.cat(K * 76.5, 0, 1) + C.parrot(K * 157.5, -1, 1) + C.chicken(K * 216, 0, 1), 'pro'),
-    max: group(346.53 - (1 - K) * LAST.max, C.mouse(K * 0, 3, 1) + C.cat(K * 76.46, -2, 1) + C.parrot(K * 157.98, -2, 1) + C.chicken(K * 216.34, 2, 1) + C.dog(K * 273.86, -1, 1), 'max'),
+    creator: row('creator', [['cat', 0], ['parrot', 0]]),
+    pro: row('pro', [['mouse', 1], ['cat', 0], ['parrot', -1], ['chicken', 0]]),
+    max: row('max', [['mouse', 3], ['cat', -2], ['parrot', -2], ['chicken', 2], ['dog', -1]]),
   };
 
   /* ---------- Plans ---------- */
