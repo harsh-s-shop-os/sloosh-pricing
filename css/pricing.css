@@ -150,17 +150,16 @@ ul { padding: 0; list-style: none; }
 .plan-visual {
   --img-gap: 8px;
   margin: -24px -24px 0; height: 160px; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 75%); mask-image: linear-gradient(to bottom, transparent 0, #000 75%);
+  /* fades in from the card's top edge and out at the bottom, so nothing is hard-cropped */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 45%, #000 70%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 45%, #000 70%, transparent 100%);
 }
 /* The lens box runs one row below the visible strip (the filler row), so lifted corners show more images, not empty space. */
-.pv-lens { height: calc(100% + var(--img) + var(--img-gap)); display: flex; flex-direction: column-reverse; gap: var(--img-gap); }
-/* the whole strip is seen through one concave lens (map built in JS) */
-.has-lens .pv-lens { filter: url(#pv-lens); }
-.pv-row { flex: none; overflow: hidden; }
+.pv-lens { height: 100%; display: flex; flex-direction: column-reverse; gap: var(--img-gap); }
+.pv-row { flex: none; }
 .pv-track { display: flex; width: max-content; animation: pv-drift 30s linear infinite; }
 /* alternate rows run the other way (rows are listed bottom-up) */
-.pv-row:nth-child(odd) .pv-track { animation-direction: reverse; }  /* child 1 is the filler; the bottom visible row (child 2) moves right */
-.pv-img { flex: none; width: var(--img); height: var(--img); margin-right: var(--img-gap); border-radius: var(--radius-lg); }  /* square; spacing as margin so a third of the track is exactly one set: seamless loop */
+.pv-row:nth-child(even) .pv-track { animation-direction: reverse; }  /* bottom row (child 1) moves right, then alternate */
+.pv-img { flex: none; width: var(--img); height: var(--img); will-change: transform; margin-right: var(--img-gap); border-radius: var(--radius-lg); }  /* square; spacing as margin so a third of the track is exactly one set: seamless loop */
 @keyframes pv-drift { from { transform: translateX(-33.3333%); } to { transform: translateX(0); } }
 @media (prefers-reduced-motion: reduce) { .pv-track { animation: none; transform: translateX(-33.3333%); } }
 .plan-intro { display: grid; gap: 4px; }
