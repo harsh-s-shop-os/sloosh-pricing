@@ -7,7 +7,13 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = p => readFileSync(join(root, p), 'utf8');
-const dataUri = p => 'data:image/svg+xml;base64,' + Buffer.from(read(p)).toString('base64');
+const MIME = { svg: 'image/svg+xml', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp' };
+// Binary-safe: read as a Buffer (not utf8 — that corrupts non-text bytes) and pick the MIME type from the
+// extension, so photos (jpg) and icons (svg) both inline correctly.
+const dataUri = p => {
+  const ext = p.split('.').pop().toLowerCase();
+  return `data:${MIME[ext] || 'application/octet-stream'};base64,` + readFileSync(join(root, p)).toString('base64');
+};
 
 let html = read('index.html');
 html = html.replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, href) => `<style>\n${read(href)}\n</style>`);
