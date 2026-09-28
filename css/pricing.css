@@ -160,7 +160,7 @@ ul { padding: 0; list-style: none; }
 .pv-track { display: flex; width: max-content; animation: pv-drift 30s linear infinite; }
 /* alternate rows run the other way (rows are listed bottom-up) */
 .pv-row:nth-child(even) .pv-track { animation-direction: reverse; }  /* bottom row (child 1) moves right, then alternate */
-.pv-img { flex: none; width: var(--img); height: var(--img); margin-right: var(--img-gap); border-radius: var(--radius-lg); }  /* square; spacing as margin so a third of the track is exactly one set: seamless loop */
+.pv-img { flex: none; width: var(--img); height: var(--img); margin-right: var(--img-gap); border-radius: var(--radius-lg); background-size: cover; background-position: center; }  /* square; spacing as margin so a third of the track is exactly one set: seamless loop */
 @keyframes pv-drift { from { transform: translateX(-33.3333%); } to { transform: translateX(0); } }
 @media (prefers-reduced-motion: reduce) { .pv-track { animation: none; transform: translateX(-33.3333%); } }
 .plan-intro { display: grid; gap: 4px; }

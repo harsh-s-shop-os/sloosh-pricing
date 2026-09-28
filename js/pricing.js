@@ -137,6 +137,20 @@
   ];
   const TILE_ANGLES = [135, 160, 200, 120, 45, 90, 225];
   const tileGrad = k => { const [a, b] = TILE_GRADS[(k * 7) % TILE_GRADS.length]; return `linear-gradient(${TILE_ANGLES[(k * 3) % TILE_ANGLES.length]}deg, hsl(var(${a})), hsl(var(${b})))`; };
+  // Soft, dreamy Unsplash stills (aurora, milky way, sunset water, misty peaks, wildflowers) — picked to sit
+  // quietly behind each plan's copy. Requested small (240px, q=60): these are background thumbnails, not hero art.
+  const TILE_PHOTOS = [
+    '1419242902214-272b3f66ee7a', '1444703686981-a3abbc4d4fe3', '1470252649378-9c29740c9fa8',
+    '1475924156734-496f6cac6ec1', '1477346611705-65d1883cee1e', '1531366936337-7c912a4589a7',
+    '1470071459604-3b5ec3a7fe05', '1490750967868-88aa4486c946', '1526772662000-3f88f10405ff',
+    '1502082553048-f009c37129b9', '1505142468610-359e7d316be0', '1454496522488-7a8e488e8606',
+    '1508739773434-c26b3d09e071', '1441974231531-c6227db76b6e',
+  ];
+  const tileImg = k => {
+    const id = TILE_PHOTOS[k % TILE_PHOTOS.length];
+    // gradient first so it's what renders instantly; the photo layers on top once it loads, same as background-size below.
+    return `background-image:url('https://images.unsplash.com/photo-${id}?w=240&h=240&fit=crop&q=60'),${tileGrad(k)}`;
+  };
   const ROW_SIZES = [7, 9, 6, 8];   // unique images per row (5–10)
   const STRIP = 160, GAP = 8, SPEED = 20;
   const TILT = 18, PERSP = 600;
@@ -155,7 +169,7 @@
     const size = slot * PERSP / (c * PERSP - slot * sn);
     const rows = Array.from({ length: p.rows }, (_, i) => i).map(r => {
       const n = ROW_SIZES[(r + 4) % ROW_SIZES.length];
-      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="background:${tileGrad(k + r * 5 + planIndex * 11)}"></span>`).join('');
+      const set = Array.from({ length: n }, (_, k) => `<span class="pv-img" style="${tileImg(k + r * 5 + planIndex * 11)}"></span>`).join('');
       const dur = (n * (size + GAP)) / SPEED * (r % 2 ? 1.15 : 1);   // same on-screen speed at any size
       // three copies of the set so the loop never shows a gap at any card width
       return `<div class="pv-row"><div class="pv-track" style="animation-duration:${dur.toFixed(2)}s">${set}${set}${set}</div></div>`;
