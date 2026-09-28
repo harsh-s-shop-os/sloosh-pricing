@@ -131,8 +131,8 @@ ul { padding: 0; list-style: none; }
 .plan-title { display: flex; align-items: center; gap: 10px; }
 .plan-title h2 { font-size: 20px; line-height: 30px; font-weight: 400; }
 .badge {
-  font-family: var(--font-mono); font-size: 11px; line-height: 18px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
-  padding: 2px 8px; border-radius: 6px;
+  font-size: 12px; line-height: 18px; font-weight: 500;
+  padding: 2px 8px; border-radius: 999px;
   background: hsl(var(--brand)); color: hsl(var(--brand-foreground));
 }
 .plan-for { margin-top: -12px; font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: pretty; }
@@ -140,7 +140,7 @@ ul { padding: 0; list-style: none; }
 .price { display: flex; align-items: baseline; gap: 8px; min-height: 44px; }
 .price-amt { font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .price-per { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); }
-.billed { margin-top: -12px; font-family: var(--font-mono); font-size: 11px; line-height: 18px; letter-spacing: .08em; text-transform: uppercase; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+.billed { margin-top: -12px; font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
 .billed b { font-weight: 500; color: hsl(var(--brand)); }
 /* Only annual billing has this line; on monthly it takes no space, so the card height adjusts. */
 .billed:empty { display: none; }
@@ -149,6 +149,12 @@ ul { padding: 0; list-style: none; }
 .credits-line strong { font-weight: 500; color: hsl(var(--foreground)); font-variant-numeric: tabular-nums; }
 
 .seat-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+/* Match the gap above the price (subtitle -> price, ~25px of visible space).
+   The stepper box is the top edge of this row, so the gap is measured to it;
+   the price line carries more built-in bottom space than the billed line,
+   hence the smaller nudge on monthly. */
+.seat-row { margin-top: 7px; }
+.billed:empty + .seat-row { margin-top: 5px; }
 .seat-row .label { margin-bottom: 2px; font-size: 14px; line-height: 20px; color: hsl(var(--foreground-subtle)); }
 .seat-note { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); }
 .stepper { display: flex; align-items: center; gap: 16px; height: 40px; padding: 0 10px; border-radius: var(--radius-xl); background: hsl(var(--muted)); flex: none; }
