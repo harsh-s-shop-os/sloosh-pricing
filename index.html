@@ -85,14 +85,10 @@
     </div>
 
     <div class="calc">
-      <div class="calc-main">
-        <div class="calc-summary">
-          <div class="calc-total">
-            <span class="calc-big" id="calc-credits">735</span>
-            <span class="calc-big-l" id="calc-credits-l">credits a month, per seat</span>
-          </div>
-          <div class="meter" aria-hidden="true"><span class="meter-fill" id="meter-fill"></span></div>
-          <p class="meter-l" id="meter-l" aria-live="polite"></p>
+      <div class="calc-panel">
+        <div class="calc-total">
+          <span class="calc-big" id="calc-credits">735</span>
+          <span class="calc-big-l" id="calc-credits-l">credits a month, per seat</span>
         </div>
 
         <div class="sliders">
@@ -109,12 +105,16 @@
             <input id="m-vid" type="range" min="0" max="60" value="6" data-cost="video8">
           </div>
         </div>
+
+        <div class="calc-meter">
+          <div class="meter" aria-hidden="true"><span class="meter-fill" id="meter-fill"></span></div>
+          <p class="meter-l" id="meter-l" aria-live="polite"></p>
+        </div>
       </div>
 
       <div class="costs">
         <p class="label">What one generation costs</p>
         <ul class="cost-list" id="costs"></ul>
-        <p class="costs-foot">You see the cost before you run anything.</p>
       </div>
     </div>
   </section>
