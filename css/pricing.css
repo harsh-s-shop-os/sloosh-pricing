@@ -76,7 +76,7 @@ ul { padding: 0; list-style: none; }
 /* ---------- Hero ---------- */
 .hero { display: grid; justify-items: start; text-align: left; gap: 20px; padding: 88px 0 48px; }
 .hero h1 {
-  font-weight: 400; font-size: clamp(22px, 6.4vw, 56px); line-height: 1.08; letter-spacing: -0.025em;
+  font-weight: 400; font-size: clamp(18px, 5.5vw, 28px); line-height: 1.2; letter-spacing: -0.01em;
   white-space: nowrap;
 }
 .hero-sub { color: hsl(var(--muted-foreground)); font-size: 16px; line-height: 24px; max-width: 46ch; text-wrap: pretty; }
@@ -128,8 +128,7 @@ ul { padding: 0; list-style: none; }
   font-size: 12px; line-height: 18px; font-weight: 500; padding: 2px 8px; border-radius: 999px;
   background: hsl(var(--brand)); color: hsl(var(--brand-foreground));
 }
-.plan-for { margin-top: -12px; font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); }
-
+.plan-for { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); }
 .price { display: flex; align-items: center; gap: 8px; min-height: 44px; }
 .price-amt { font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .price-was { font-size: 16px; color: hsl(var(--muted-foreground)); text-decoration: line-through; font-variant-numeric: tabular-nums; }
@@ -138,11 +137,24 @@ ul { padding: 0; list-style: none; }
 .billed { margin-top: -12px; min-height: 18px; font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
 .billed b { font-weight: 500; color: hsl(var(--brand)); }
 
+.credits-line { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; color: hsl(var(--foreground-subtle)); }
+.credits-line strong { font-weight: 500; color: hsl(var(--foreground)); font-variant-numeric: tabular-nums; }
+
+.seat-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.seat-row .label { margin-bottom: 2px; }
+.seat-note { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); }
+.stepper { display: flex; align-items: center; gap: 14px; height: 36px; padding: 0 8px; border-radius: var(--radius-xl); background: hsl(var(--muted)); flex: none; }
+.stepper-btn { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; color: hsl(var(--foreground)); transition: background-color var(--motion-duration-enter) var(--motion-ease-out); }
+.stepper-btn:hover:not(:disabled) { background: hsl(var(--border-strong)); }
+.stepper-btn:disabled { color: hsl(var(--muted-foreground)); opacity: .45; cursor: not-allowed; }
+.stepper-btn svg { width: 14px; height: 14px; }
+.stepper-val { min-width: 14px; text-align: center; font-size: 15px; line-height: 1; font-variant-numeric: tabular-nums; }
+
+.cta-group { display: flex; flex-direction: column; gap: 8px; }
 .plan-cta { width: 100%; }
+.cta-note { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); text-align: center; }
 
 .plan-body { position: relative; display: flex; flex-direction: column; gap: 20px; padding: 24px 24px 96px; flex: 1; }
-.credits-line { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 20px; }
-.credits-line strong { font-weight: 500; font-variant-numeric: tabular-nums; }
 .info { position: relative; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; color: hsl(var(--muted-foreground)); }
 .info:hover, .info:focus-visible { color: hsl(var(--foreground)); background: hsl(var(--muted)); }
 .info svg { width: 16px; height: 16px; }
@@ -169,12 +181,17 @@ ul { padding: 0; list-style: none; }
 
 /* Critters — the hover moment from the live page, kept verbatim */
 .critters { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; z-index: -1; }
+/* Two diagonal lines, sweeping bottom-to-top on hover. Each is sized to
+   the card's own box (not a fixed pixel size) via a full-bleed diagonal
+   gradient, so the visible band always spans the card's full width no
+   matter how narrow or wide the card renders. */
 .stripe {
-  position: absolute; display: flex; align-items: center; justify-content: center;
-  transform: translateY(1032px); transition: none;
+  position: absolute; inset: 0; transform: translateY(100%); transition: none;
+  background-repeat: no-repeat;
 }
-.stripe i { display: block; flex: none; width: 503px; transform: rotate(-30deg); background: hsl(var(--foreground) / .05); }
-.plan:hover .stripe, .plan:focus-within .stripe { transform: translateY(0); transition: transform .9s linear; }
+.stripe-1 { background-image: linear-gradient(24deg, transparent 0 54%, hsl(var(--foreground) / .08) 54% 62%, transparent 62% 100%); }
+.stripe-2 { background-image: linear-gradient(24deg, transparent 0 74%, hsl(var(--foreground) / .08) 74% 80%, transparent 80% 100%); }
+.plan:hover .stripe, .plan:focus-within .stripe { transform: translateY(0); transition: transform .5s linear; }
 .critter { position: absolute; bottom: 0; transform: translateY(110%); transition: transform var(--motion-duration-enter) var(--motion-ease-out); }
 .plan:hover .critter, .plan:focus-within .critter { transform: translateY(0); }
 .plan:hover .critter:nth-child(4) { transition-delay: .03s; }
@@ -208,7 +225,7 @@ ul { padding: 0; list-style: none; }
 .block { padding-top: 120px; }
 .block-head { display: grid; gap: 12px; max-width: 640px; margin-bottom: 40px; }
 .eyebrow { font-size: 13px; line-height: 20px; color: hsl(var(--brand)); }
-.block h2 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
+.block h2 { font-size: 28px; line-height: 1.15; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
 .lede { color: hsl(var(--muted-foreground)); font-size: 16px; line-height: 24px; text-wrap: pretty; }
 .label { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); }
 
@@ -317,7 +334,7 @@ details p { padding: 0 40px 20px 0; font-size: 14px; line-height: 22px; color: h
   padding: 72px 24px 120px; border-radius: var(--radius-card); background: hsl(var(--card)); border: 1px solid hsl(var(--border));
   overflow: hidden; isolation: isolate;
 }
-.closing h2 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; font-weight: 400; letter-spacing: -0.02em; }
+.closing h2 { font-size: 28px; line-height: 1.15; font-weight: 400; letter-spacing: -0.02em; }
 .closing p { color: hsl(var(--muted-foreground)); margin-bottom: 12px; }
 .closing-critters { position: absolute; left: 50%; bottom: 0; width: 346px; height: 76px; transform: translateX(-50%); z-index: -1; }
 .closing-critters .critter { transform: translateY(0); }

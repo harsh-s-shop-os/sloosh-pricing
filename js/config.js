@@ -26,11 +26,11 @@ const PLANS = [
     annual: 15,
     per: 'per month',
     perShort: 'month',
+    note: 'Just you. One seat.',
     credits: 285,
     creditsLabel: 'credits a month',
     cta: 'Subscribe to Creator',
     href: '/sign-up?redirect=%2Fpricing&plan=creator',
-    note: 'Just you. One seat.',
     eyebrow: 'Includes',
     feats: [
       'Unlimited saved canvases',
@@ -39,6 +39,7 @@ const PLANS = [
       '3 concurrent runs',
       'Credit top-ups',
     ],
+    seats: { min: 1, max: 1, default: 1 },
     critters: 'creator',
   },
   {
@@ -49,11 +50,11 @@ const PLANS = [
     annual: 39,
     per: 'per seat per month',
     perShort: 'seat / month',
+    note: 'Most teams start here.',
     credits: 735,
     creditsLabel: 'credits per seat',
     cta: 'Subscribe to Pro',
     href: '/sign-up?redirect=%2Fpricing&plan=pro',
-    note: 'Most teams start here.',
     featured: true,
     eyebrow: 'Everything in Creator, and:',
     feats: [
@@ -64,6 +65,7 @@ const PLANS = [
       '6 concurrent runs',
       'Unused credits roll over 3 months',
     ],
+    seats: { min: 1, max: 10, default: 3 },
     critters: 'pro',
   },
   {
@@ -74,17 +76,18 @@ const PLANS = [
     annual: 79,
     per: 'per seat per month',
     perShort: 'seat / month',
+    note: 'Built for big batches.',
     credits: 1485,
     creditsLabel: 'credits per seat',
     cta: 'Subscribe to Max',
     href: '/sign-up?redirect=%2Fpricing&plan=max',
-    note: 'Built for big batches.',
-    eyebrow: 'Everything in Pro, and:',
+    eyebrow: 'Everything in Creator, Pro, and:',
     feats: [
       'Batch up to 200 items',
       '12 concurrent runs',
       '2x the credits of Pro per seat',
     ],
+    seats: { min: 1, max: 10, default: 3 },
     critters: 'max',
   },
 ];
@@ -105,7 +108,7 @@ const COST_ROWS = [
   { what: 'Upscale', cost: COST.upscale, icon: 'upscale' },
   { what: 'Image edit', cost: COST.edit, icon: 'edit' },
   { what: '8-second video', cost: COST.video8, icon: 'video' },
-  { what: 'Longer video', unit: 'per second', cost: COST.videoPerSec, icon: 'film', proOnly: true },
+  { what: 'Longer video (per second)', cost: COST.videoPerSec, icon: 'film', proOnly: true },
 ];
 
 /* Compare table. `null` renders as a dash, `true` as a check. */
@@ -170,7 +173,7 @@ const FAQ = [
     id: 'billing',
     title: 'Billing',
     items: [
-      ['Is annual billing cheaper?', 'Yes. Annual plans cost 20% less per month and are billed once a year.'],
+      ['Is annual billing cheaper?', 'Yes. Annual plans cost less per month and are billed once a year.'],
     ],
   },
 ];

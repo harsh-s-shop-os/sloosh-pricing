@@ -18,6 +18,7 @@
     check: svg('<path d="M20 6 9 17l-5-5"/>'),
     info: svg('<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'),
     plus: svg('<path d="M5 12h14"/><path d="M12 5v14"/>'),
+    minus: svg('<path d="M5 12h14"/>'),
     arrow: svg('<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>', 'class="arrow" width="16" height="16"'),
     image: svg('<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>'),
     'image-hd': svg('<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 9v6"/><path d="M11 9v6"/><path d="M7 12h4"/><path d="M14 9v6h1.5a2.5 2.5 0 0 0 0-5H14"/>'),
@@ -28,10 +29,12 @@
     dash: '<span aria-label="Not included">—</span>',
   };
 
-  /* ---------- Critters (positions copied from dev.sloosh.ai) ---------- */
+  /* Two diagonal lines that sweep bottom-to-top on hover. Sized in %
+     of the card itself so they always span its full width, at any
+     card width the grid gives them (3-up, 4-up, or stacked mobile). */
   const STRIPES = `
-    <div class="stripe" style="left:-77.06px;top:-362.99px;width:465.61px;height:303.46px"><i style="height:60px"></i></div>
-    <div class="stripe" style="left:-39.56px;top:-298.03px;width:450.61px;height:277.48px"><i style="height:30px"></i></div>`;
+    <div class="stripe stripe-1"></div>
+    <div class="stripe stripe-2"></div>`;
   const C = {
     mouse: (l, b) => `<div class="critter" style="left:${l}px;width:67.71px;height:60.61px;bottom:${b}px"><img alt="" src="${asset('pricing/mouse.svg')}" style="inset:0;width:100%;height:100%"></div>`,
     cat: (l, b) => `<div class="critter flip" style="left:${l}px;width:72px;height:72px;bottom:${b}px"><img alt="" src="${asset('pricing/cat.svg')}" style="inset:0;width:100%;height:100%"></div>`,
@@ -59,30 +62,61 @@
       <li class="${p.id === 'creator' ? 'na' : ''}"><span>4K images</span><span>${p.id === 'creator' ? 'Pro and Max' : n(COST.img4k)}</span></li>
       <li><span>8-second videos</span><span>${n(COST.video8)}</span></li></ul>`;
   };
+  const seatRowHTML = p => !p.seats ? '' : `
+        <div class="seat-row" data-seats data-min="${p.seats.min}" data-max="${p.seats.max}">
+          <div>
+            <p class="label">Select Seats</p>
+            <p class="seat-note" data-seat-note></p>
+          </div>
+          <div class="stepper">
+            <button type="button" class="stepper-btn" data-step="-1" aria-label="Decrease seats">${I.minus}</button>
+            <span class="stepper-val" data-seat-count>${p.seats.default}</span>
+            <button type="button" class="stepper-btn" data-step="1" aria-label="Increase seats">${I.plus}</button>
+          </div>
+        </div>`;
   const planHTML = (p, i) => `
     <article class="plan${p.featured ? ' featured' : ''}" data-plan="${p.id}" style="--i:${i}">
       <div class="critters" aria-hidden="true">${STRIPES}${CRITTERS[p.critters] || ''}</div>
       <div class="plan-head">
-        <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Most popular</span>' : ''}</div>
+        <div class="plan-title"><h2>${p.name}</h2>${p.featured ? '<span class="badge">Popular</span>' : ''}</div>
         <p class="plan-for">${p.for}</p>
         <p class="price">
           <span class="price-amt" data-amt>$${p.monthly}</span>
           <span class="price-was" data-was hidden>$${p.monthly}</span>
-          <span class="price-per">${p.per}</span>
+          <span class="price-per" data-per>${p.per}</span>
         </p>
-        <p class="billed" data-billed aria-live="polite"></p>
-        <a class="btn btn-md ${p.featured ? 'btn-brand' : 'btn-secondary'} plan-cta" href="${p.href}">${p.cta}</a>
+        <p class="billed" data-billed aria-live="polite"></p>${seatRowHTML(p)}
+        <div class="cta-group">
+          <a class="btn btn-md ${p.featured ? 'btn-brand' : 'btn-secondary'} plan-cta" href="${p.href}">${p.cta} ${I.arrow}</a>
+          <p class="cta-note">${p.note}</p>
+        </div>
       </div>
       <div class="plan-body">
         <p class="credits-line"><span><strong data-credits="${p.credits}">${fmt(p.credits)}</strong> ${p.creditsLabel}</span>
           <button type="button" class="info" aria-label="What ${fmt(p.credits)} credits makes" aria-expanded="false">${I.info}<span class="tip" role="tooltip">${tipHTML(p)}</span></button>
         </p>
-        <p class="eyebrow-sm">${p.eyebrow}</p>
+        ${p.eyebrow ? `<p class="eyebrow-sm">${p.eyebrow}</p>` : ''}
         <ul class="feats">${p.feats.map(f => `<li>${I.check}<span>${f}</span></li>`).join('')}</ul>
       </div>
     </article>`;
   const plansEl = $('#plans');
   plansEl.innerHTML = PLANS.map(planHTML).join('');
+
+  // Seat steppers: one per paid plan, clamped to that plan's own range
+  $$('.seat-row', plansEl).forEach(row => {
+    const min = +row.dataset.min, max = +row.dataset.max;
+    const valEl = $('[data-seat-count]', row), noteEl = $('[data-seat-note]', row);
+    const minusBtn = $('.stepper-btn[data-step="-1"]', row), plusBtn = $('.stepper-btn[data-step="1"]', row);
+    let n = +valEl.textContent;
+    const paint = () => {
+      valEl.textContent = n;
+      noteEl.textContent = max <= 1 ? 'Need a team? Pick Pro.' : n <= 1 ? 'Just you.' : `You + ${n - 1} teammate${n - 1 > 1 ? 's' : ''}`;
+      minusBtn.disabled = n <= min; plusBtn.disabled = n >= max;
+    };
+    minusBtn.addEventListener('click', () => { if (n > min) { n--; paint(); } });
+    plusBtn.addEventListener('click', () => { if (n < max) { n++; paint(); } });
+    paint();
+  });
 
   // Tooltips: tap to toggle on touch, close on outside click / Esc
   $$('.info').forEach(b => b.addEventListener('click', e => {
@@ -131,8 +165,8 @@
       tween(amt, from, to, '$');
       was.hidden = cycle !== 'annual';
       billed.innerHTML = cycle === 'annual'
-        ? `$${fmt(p.annual * 12)}${p.id === 'creator' ? '' : ' per seat'} billed yearly · <b>save $${fmt((p.monthly - p.annual) * 12)}</b>`
-        : 'Billed monthly · cancel anytime';
+        ? `$${fmt(p.annual * 12)}${p.seats && p.seats.max > 1 ? ' per seat' : ''} billed yearly · <b>save $${fmt((p.monthly - p.annual) * 12)}</b>`
+        : '';
       const th = $(`[data-price="${p.id}"]`);
       if (th) th.textContent = `$${p[cycle]} / ${p.perShort}${cycle === 'annual' ? ', billed yearly' : ''}`;
     });
@@ -140,10 +174,12 @@
   segmented($('#cycle'), v => { cycle = v; renderCycle(); });
 
   /* ---------- Compare table ---------- */
+  // One column per plan (creator/pro/max).
+  const tablePlans = PLANS;
   const table = $('#table');
   const cell = v => v === true ? `<td class="yes">${I.check}</td>` : v === null ? `<td class="no">—</td>` : `<td>${v}</td>`;
   table.innerHTML = `
-    <thead><tr><th scope="col"><span class="th-label">Plans</span></th>${PLANS.map((p, i) => `
+    <thead><tr><th scope="col"><span class="th-label">Plans</span></th>${tablePlans.map((p, i) => `
       <th scope="col" data-col="${i + 1}" class="${p.featured ? 'featured-col' : ''}">${p.name}<small data-price="${p.id}">$${p.monthly} / ${p.perShort}</small>
         <a class="btn ${p.featured ? 'btn-brand' : 'btn-secondary'} th-cta" href="${p.href}">Choose ${p.name}</a></th>`).join('')}
     </tr></thead>
@@ -158,8 +194,10 @@
     td.addEventListener('mouseenter', () => setCol(td.dataset.col));
     td.addEventListener('mouseleave', () => setCol(null));
   });
-  $$('.plan', plansEl).forEach((card, i) => {
-    card.addEventListener('mouseenter', () => setCol(String(i + 1)));
+  $$('.plan', plansEl).forEach(card => {
+    const idx = tablePlans.findIndex(x => x.id === card.dataset.plan);
+    if (idx < 0) return;
+    card.addEventListener('mouseenter', () => setCol(String(idx + 1)));
     card.addEventListener('mouseleave', () => setCol(null));
   });
   renderCycle();
