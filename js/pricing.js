@@ -325,7 +325,7 @@
   $('#faq-list').innerHTML = FAQ.map(g => `
     <div class="faq-group" id="f-${g.id}">
       <h3>${g.title}</h3>
-      ${g.items.map(([q, a]) => `<details><summary>${q}<span class="pm">${I.plus}</span></summary><p>${a}</p></details>`).join('')}
+      ${g.items.map(([q, a]) => `<details><summary><span class="q">${q}</span><span class="pm" aria-hidden="true"><span class="pm-plus">${I.plus}</span><span class="pm-minus">${I.minus}</span></span></summary><p>${a}</p></details>`).join('')}
     </div>`).join('');
   $$('details').forEach(d => d.addEventListener('toggle', () => {
     if (d.open && !reduce) $('p', d).animate([{ opacity: 0, transform: 'translateY(-4px)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: 'cubic-bezier(.16,1,.3,1)' });
