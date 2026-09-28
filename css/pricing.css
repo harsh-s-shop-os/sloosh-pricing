@@ -80,7 +80,7 @@ ul { padding: 0; list-style: none; }
   font-weight: 400; font-size: clamp(18px, 5.5vw, 28px); line-height: 1.2; letter-spacing: -0.01em;
   white-space: nowrap;
 }
-.hero-sub { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; max-width: 62ch; text-wrap: balance; }
+.hero-sub { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; max-width: 62ch; text-wrap: pretty; }
 .hero .segmented { flex: none; }
 @media (max-width: 640px) {
   .hero { flex-direction: column; align-items: flex-start; gap: 28px; }
@@ -132,7 +132,7 @@ ul { padding: 0; list-style: none; }
   font-size: 12px; line-height: 18px; font-weight: 500; padding: 2px 8px; border-radius: 999px;
   background: hsl(var(--brand)); color: hsl(var(--brand-foreground));
 }
-.plan-for { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: balance; }
+.plan-for { font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: pretty; }
 .price { display: flex; align-items: center; gap: 8px; min-height: 44px; }
 .price-amt { font-size: 36px; line-height: 44px; font-weight: 400; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 .price-was { font-size: 16px; color: hsl(var(--muted-foreground)); text-decoration: line-through; font-variant-numeric: tabular-nums; }
@@ -156,7 +156,7 @@ ul { padding: 0; list-style: none; }
 
 .cta-group { display: flex; flex-direction: column; gap: 8px; }
 .plan-cta { width: 100%; }
-.cta-note { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); text-align: center; text-wrap: balance; }
+.cta-note { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); text-align: center; text-wrap: pretty; }
 
 .plan-body { position: relative; display: flex; flex-direction: column; gap: 20px; padding: 24px 24px 96px; flex: 1; }
 .info { position: relative; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; color: hsl(var(--muted-foreground)); }
@@ -185,17 +185,32 @@ ul { padding: 0; list-style: none; }
 
 /* Critters — the hover moment from the live page, kept verbatim */
 .critters { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; z-index: -1; }
-/* Two diagonal lines, sweeping bottom-to-top on hover. Each is sized to
-   the card's own box (not a fixed pixel size) via a full-bleed diagonal
-   gradient, so the visible band always spans the card's full width no
-   matter how narrow or wide the card renders. */
-.stripe {
-  position: absolute; inset: 0; transform: translateY(100%); transition: none;
-  background-repeat: no-repeat;
+/* Highlight bars — replicated from dev.sloosh.ai/pricing: a 60px and a
+   30px bar at -30deg, bg-foreground/5, centres 60px apart along the normal
+   (15px gap between edges), the thick one leading. Length is tied to the
+   card width (container units) so the bars always span ~130% of it, and
+   the sweep starts fully below the card and ends fully above it, so they
+   never freeze inside the frame. Unhover snaps back with no transition
+   (both ends are off-card, so the snap is invisible). */
+.critters { container-type: size; }
+.stripes {
+  --len: 150cqw;                                   /* cos(30deg) x 150% = 130% of card width */
+  --rise: calc(var(--len) * .25 + 80px);           /* clears the group fully: half-height of a bar at 30deg is len/4 + 26px, plus the thin bar 52px below */
+  position: absolute; left: 50%; top: 0; width: 0; height: 0;
+  transform: translateY(calc(100cqh + var(--rise)));
+  transition: none;
 }
-.stripe-1 { background-image: linear-gradient(24deg, transparent 0 54%, hsl(var(--foreground) / .08) 54% 62%, transparent 62% 100%); }
-.stripe-2 { background-image: linear-gradient(24deg, transparent 0 74%, hsl(var(--foreground) / .08) 74% 80%, transparent 80% 100%); }
-.plan:hover .stripe, .plan:focus-within .stripe { transform: translateY(0); transition: transform .5s linear; }
+.plan:hover .stripes, .plan:focus-within .stripes {
+  transform: translateY(calc(var(--rise) * -1));
+  transition: transform 240ms linear;
+}
+.stripe {
+  position: absolute; left: 0; top: 0; width: var(--len);
+  background: hsl(var(--foreground) / .05);
+  transform: translate(-50%, -50%) rotate(-30deg);
+}
+.stripe-thick { height: 60px; }
+.stripe-thin  { height: 30px; margin: 52px 0 0 30px; }  /* 60px along the normal: (sin30, cos30) x 60 */
 .critter { position: absolute; bottom: 0; transform: translateY(110%); transition: transform var(--motion-duration-enter) var(--motion-ease-out); }
 .plan:hover .critter, .plan:focus-within .critter { transform: translateY(0); }
 .plan:hover .critter:nth-child(4) { transition-delay: .03s; }
@@ -205,7 +220,7 @@ ul { padding: 0; list-style: none; }
 .critter img { position: absolute; max-width: none; display: block; }
 .critter.flip > img:first-child { transform: scaleX(-1); }
 @media (prefers-reduced-motion: reduce) {
-  .stripe { display: none; }
+  .stripes { display: none; }
   .critter { transition: none; }
 }
 
@@ -216,12 +231,12 @@ ul { padding: 0; list-style: none; }
 }
 .enterprise .ent-eyebrow { font-size: 16px; line-height: 24px; }
 .enterprise h3 { font-size: 28px; line-height: 36px; font-weight: 400; margin-top: 4px; }
-.enterprise .ent-body { margin-top: 8px; font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: balance; }
+.enterprise .ent-body { margin-top: 8px; font-size: 14px; line-height: 20px; color: hsl(var(--muted-foreground)); text-wrap: pretty; }
 .ent-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; font-size: 14px; line-height: 20px; color: hsl(var(--foreground-subtle)); }
 .ent-items li { display: flex; gap: 10px; align-items: center; }
 .ent-items svg { width: 16px; height: 16px; color: hsl(var(--muted-foreground)); flex: none; }
 .enterprise .btn { min-width: 140px; }
-.footline { margin-top: 16px; text-align: center; font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); text-wrap: balance; }
+.footline { margin-top: 16px; text-align: center; font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); text-wrap: pretty; }
 .footline a { color: hsl(var(--foreground)); text-decoration: underline; text-decoration-color: hsl(var(--border-strong)); text-underline-offset: 3px; }
 .footline a:hover { text-decoration-color: hsl(var(--foreground)); }
 
@@ -230,7 +245,7 @@ ul { padding: 0; list-style: none; }
 .block-head { display: grid; gap: 12px; max-width: 640px; margin-bottom: 40px; }
 .eyebrow { font-size: 13px; line-height: 20px; color: hsl(var(--brand)); }
 .block h2 { font-size: 28px; line-height: 1.15; font-weight: 400; letter-spacing: -0.02em; text-wrap: balance; }
-.lede { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: balance; }
+.lede { color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 20px; text-wrap: pretty; }
 .label { font-size: 12px; line-height: 18px; color: hsl(var(--muted-foreground)); }
 
 /* ---------- Calculator ---------- */
@@ -330,7 +345,7 @@ summary .pm { flex: none; width: 24px; height: 24px; display: grid; place-items:
 summary:hover .pm { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
 details[open] summary .pm { transform: rotate(45deg); }
 summary .pm svg { width: 16px; height: 16px; }
-details p { padding: 0 40px 20px 0; font-size: 14px; line-height: 22px; color: hsl(var(--muted-foreground)); max-width: 68ch; text-wrap: balance; }
+details p { padding: 0 40px 20px 0; font-size: 14px; line-height: 22px; color: hsl(var(--muted-foreground)); max-width: 68ch; text-wrap: pretty; }
 
 /* ---------- Closing ---------- */
 .closing {
@@ -339,7 +354,7 @@ details p { padding: 0 40px 20px 0; font-size: 14px; line-height: 22px; color: h
   overflow: hidden; isolation: isolate;
 }
 .closing h2 { font-size: 28px; line-height: 1.15; font-weight: 400; letter-spacing: -0.02em; }
-.closing p { color: hsl(var(--muted-foreground)); margin-bottom: 12px; text-wrap: balance; }
+.closing p { color: hsl(var(--muted-foreground)); margin-bottom: 12px; text-wrap: pretty; }
 .closing-critters { position: absolute; left: 50%; bottom: 0; width: 346px; height: 76px; transform: translateX(-50%); z-index: -1; }
 .closing-critters .critter { transform: translateY(0); }
 .closing:hover .closing-critters .critter { animation: hop .5s var(--motion-ease-out); }

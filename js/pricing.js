@@ -29,12 +29,11 @@
     dash: '<span aria-label="Not included">—</span>',
   };
 
-  /* Two diagonal lines that sweep bottom-to-top on hover. Sized in %
-     of the card itself so they always span its full width, at any
-     card width the grid gives them (3-up, 4-up, or stacked mobile). */
+  /* Two highlight bars (thick + thin, 15px apart) that sweep bottom-to-top
+     through the card on hover and exit past the top edge. Geometry from
+     dev.sloosh.ai/pricing; length scales with the card (see .stripes). */
   const STRIPES = `
-    <div class="stripe stripe-1"></div>
-    <div class="stripe stripe-2"></div>`;
+    <div class="stripes"><div class="stripe stripe-thick"></div><div class="stripe stripe-thin"></div></div>`;
   const C = {
     mouse: (l, b) => `<div class="critter" style="left:${l}px;width:67.71px;height:60.61px;bottom:${b}px"><img alt="" src="${asset('pricing/mouse.svg')}" style="inset:0;width:100%;height:100%"></div>`,
     cat: (l, b) => `<div class="critter flip" style="left:${l}px;width:72px;height:72px;bottom:${b}px"><img alt="" src="${asset('pricing/cat.svg')}" style="inset:0;width:100%;height:100%"></div>`,
