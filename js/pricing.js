@@ -180,12 +180,17 @@
   document.addEventListener('click', () => $$('.info').forEach(x => x.setAttribute('aria-expanded', 'false')));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') $$('.info').forEach(x => x.setAttribute('aria-expanded', 'false')); });
 
-  /* ---------- Enterprise ---------- */
+  /* ---------- Enterprise ----------
+     Same type system as the plan cards: plan name + subtitle, then the
+     "price" (Custom pricing) at price size. Checks sit in one block in the
+     centre, CTA on the right. */
   $('#enterprise').innerHTML = `
-    <div>
-      <p class="ent-eyebrow">${ENTERPRISE.eyebrow}</p>
-      <h3>${ENTERPRISE.title}</h3>
-      <p class="ent-body">${ENTERPRISE.body}</p>
+    <div class="ent-info">
+      <div class="plan-intro">
+        <div class="plan-title"><h2>${ENTERPRISE.eyebrow}</h2></div>
+        <p class="plan-for">${ENTERPRISE.body}</p>
+      </div>
+      <div class="plan-pricing"><p class="price"><span class="price-amt">${ENTERPRISE.title}</span></p></div>
     </div>
     <ul class="ent-items">${ENTERPRISE.items.map(i => `<li>${I.check}<span>${i}</span></li>`).join('')}</ul>
     <a class="btn btn-md btn-secondary" href="${ENTERPRISE.href}" target="_blank" rel="noopener">${ENTERPRISE.cta} ${I.arrow}</a>`;
