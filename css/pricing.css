@@ -583,3 +583,6 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
   42.2%, 85.5% { scale: 1 .04; }
 }
 @media (prefers-reduced-motion: reduce) { .calc-peek .dog > img { animation: none; } }
+
+/* Section subcopy hidden (copy kept in index.html; delete this rule to bring it back). */
+.hero-sub, .block-head .lede, .closing > p { display: none; }
