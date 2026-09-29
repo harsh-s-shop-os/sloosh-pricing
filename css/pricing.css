@@ -784,3 +784,15 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
    (js: onEnter → PixelLoad). Hidden until the dots cover the tile, then fades in as they shrink away. */
 .mz-pic { position: absolute; inset: 0; border-radius: inherit; background-size: cover; background-position: center; transition: opacity 300ms var(--motion-ease-out); }
 .mz-item.px-wait .mz-pic { opacity: 0; }
+
+/* ---------- Titles: bold weight (dev.sloosh.ai "Viral Visuals" headings use 900; we use 700) ----------
+   Page title and every section title: 36px (30px on phones, unchanged), weight 700, white.
+   Exception: the Credits section sits on the yellow band, where white text is unreadable,
+   so its title stays near-black. */
+.hero h1, .block h2, .closing h2 { font-weight: 700; color: #fff; }
+.band-brand .block-head h2 { color: hsl(var(--brand-foreground)); }
+
+/* Plan-card prices and plan names (Creator, Pro, Max) use the title weight, 700. The live price is white.
+   The struck-through monthly price stays regular weight (400) and grey so it reads as secondary. */
+.price-amt { font-weight: 700; color: #fff; }
+.plan-title h2 { font-weight: 700; }
