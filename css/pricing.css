@@ -796,3 +796,10 @@ details p { padding: 0 40px 16px 0; font-size: 14px; line-height: 22px; color: h
    The struck-through monthly price stays regular weight (400) and grey so it reads as secondary. */
 .price-amt { font-weight: 700; color: #fff; }
 .plan-title h2 { font-weight: 700; }
+
+/* Calculator credit number (e.g. 1,485): title weight, 700. */
+.calc-big { font-weight: 700; }
+
+/* Compare table plan names (Creator, Pro, Max): weight 700. The price line under each stays 400. */
+.compare thead th { font-weight: 700; }
+.compare thead th small { font-weight: 400; }
